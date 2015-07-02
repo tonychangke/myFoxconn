@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body>
+    <form action="" method="post">
+	    <h1>username</h1>
+            <p><input type=text name=username>
+	    <h1>password</h1>
+            <p><input type=text name=password>
+	    <h1>status</h1>
+            <p><input type=text name=status>
+	    <h1>query user</h1>
+            <p><input type=text name=quser>
+	    <h1>time</h1>
+            <p><input type=text name=time>
+
+            <p><input type=submit value=upload>
+    </form>
+
+
+    {% block body %}
+        <h1>upload your account information and rss value</h1>
+    {% endblock %}
+    </body>
+</html>
