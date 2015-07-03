@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-EN">
+
+    <head>
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="{{ url_for('static', filename = 'css/bootstrap.min.css' ) }}">
+	
+	<!-- Login form CSS -->
+	<link rel="stylesheet" href="{{ url_for('static', filename = 'css/login.css' ) }}">
+    </head>
+
+    
+    <body>
+
+    <div class="container">
+
+        <div class="row" id="pwd-container">
+   	    <div class="col-md-2"></div>
+
+               <div class="col-md-8">
+		    <section class="login-form">
+			    <form method="post" action="#" role="login">
+				    <h1 class="center" > Welcome to Foxconn LBS </h1>
+				    <br>
+				    <img src="{{ url_for('static', filename = 'map/test_map.jpg' ) }}" class="img-responsive" alt="" />
+			    </form>
+
+		    </section>  
+	       </div>
+
+	       <div class="col-md-4"></div>
+
+
+	    </div>
+
+    </div>
+    </body>
+
+</html>

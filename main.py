@@ -45,8 +45,15 @@ def query_json(flag, data=None):
         fail_json = {'ok':False}
         return json.dumps(fail_json)
 
+@testserver.route("/", methods=['GET','POST'])
+def index():
+    """ Index page for login """
+    if request.method == "POST":
+        return render_template("map.html")
+    else:
+        return render_template("base.html")
 
-@testserver.route('/login/',methods=['GET','POST'])
+@testserver.route('/login/', methods=['GET','POST'])
 def login():
     """  Login function
          --------------
@@ -81,9 +88,9 @@ def login():
         logfail = 'account does not exist'
         logsucess = '%f' % (location)
         if exist == 1:       
-            return send_login_json(flag=1, logsucess)
+            return send_login_json(1, logsucess)
         if exist != 1:
-            return send_login_json(flag=0)
+            return send_login_json(0)
 
     # return the login html template
     if request.method=="GET":
@@ -125,11 +132,11 @@ def query():
             qresult = "%s" %(loca)
             cursor.close()
             db.close()
-            return query_json(flag=1, qresult)
+            return query_json(1, qresult)
         else:
             cursor.close()
             db.close()
-            return query_json(flag=0)
+            return query_json(0)
 
 
 
