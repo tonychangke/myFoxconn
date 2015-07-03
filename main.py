@@ -105,6 +105,8 @@ def query():
             qresult="%s" %(loca)
             cursor.close()
             db.close()
+            #a=1
+            #a=1
             return query_ok_json(qresult)
         else:
             cursor.close()
