@@ -73,7 +73,8 @@ def login():
         return render_template('login.html')
 
 
-#查询某个人在某个时间的位置
+#查询某个人在某个时间的位置.
+#删除了qexist的判断！
 @testserver.route('/query/',methods=['GET','POST'])
 def query():
      #在浏览器上做测试
@@ -97,7 +98,7 @@ def query():
         qexist=cursor.execute(quserv,(quser))
         qtexist=cursor.execute(query,(quser, time))
         
-        if exist==1 & qexist==1 & qtexist==1:#如果通过验证并且是管理员,并且存在记录。记录不能是重复的（可修改）
+        if exist==1 & qtexist==1:#如果通过验证并且是管理员,并且存在记录。记录不能是重复的（可修改）
             cursor.execute(query,(quser, time))
             qloc=cursor.fetchone()
             loca=qloc[0]
