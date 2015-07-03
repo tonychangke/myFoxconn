@@ -125,11 +125,11 @@ def query():
             qresult = "%s" %(loca)
             cursor.close()
             db.close()
-            return query_json(qresult)
+            return query_json(flag=1, qresult)
         else:
             cursor.close()
             db.close()
-            return query_json()
+            return query_json(flag=0)
 
 
 
