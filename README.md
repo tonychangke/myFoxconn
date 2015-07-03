@@ -1,7 +1,7 @@
 #Foxconn Indoor Localization System
 
-This is a private project. Please keep all the related 
-materials confidential.
+*This is a private project. Please keep all the related 
+materials confidential.*
 
 ### Goal
 Provide a user-friendly indoor localization system. The
