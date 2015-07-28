@@ -125,6 +125,7 @@ def query():
         qexist  = cursor.execute(quserv,(quser))
         qtexist = cursor.execute(query,(quser, time))
         
+
         if exist == 1 & qtexist == 1:
             cursor.execute(query,(quser, time))
             qloc = cursor.fetchone()
@@ -132,6 +133,7 @@ def query():
             qresult = "%s" %(loca)
             cursor.close()
             db.close()
+
             return query_json(1, qresult)
         else:
             cursor.close()
