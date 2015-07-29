@@ -7,7 +7,7 @@ import sqlite3
 import string
 
 from localization import localization
-from flask import Flask, jsonify, render_template,request
+from flask import Flask, jsonify, render_template,request,send_from_directory
 
 testserver = Flask(__name__)
 
@@ -125,6 +125,7 @@ def query():
         qexist  = cursor.execute(quserv,(quser))
         qtexist = cursor.execute(query,(quser, time))
         
+
         if exist == 1 & qtexist == 1:
             cursor.execute(query,(quser, time))
             qloc = cursor.fetchone()
@@ -132,11 +133,81 @@ def query():
             qresult = "%s" %(loca)
             cursor.close()
             db.close()
+
             return query_json(1, qresult)
         else:
             cursor.close()
             db.close()
             return query_json(0)
+
+
+
+@testserver.route('/register/', methods=['GET','POST'])
+def register():
+    """  register function
+         --------------
+
+         register a new user. an Invitation code is needed. 未区分普通用户管理元注册，暂未添加邮箱库
+    """
+    if request.method == "GET":
+        return render_template('register.html')
+    if request.method == "POST":
+        usern = request.form.get('username')
+        passw = request.form.get('password')
+        cpassw = request.form.get('cpassword')
+        email = request.form.get('email')
+        stat = request.form.get('status')
+        cemail = request.form.get('cemail')
+        code = request.form.get('invicode')
+        # connect to db
+        db = MySQLdb.connect(host='localhost', user='root', passwd='wuyou', db='noyou_db') 
+        cursor = db.cursor()
+        codeveri = "select * from invitation_code where invicode=%s"
+        exist = cursor.execute(codeveri,(code))
+        insert = "insert into account (username, password, status) values(%s, %s, %s)"
+        searchname = "select * from account where username=%s"
+        nexist = cursor.execute(searchname,(usern))
+        if exist == 1:
+            if nexist !=1:
+                if (passw) == (cpassw):
+                    #return ('right')
+                    paconfirm = 1
+                   # return ('gith')
+                else:
+                    paconfirm = 0
+                    return ('two passwords are different')
+                if (cemail) == (email):
+                    emconfirm = 1
+                    #return ('gith')
+                else:
+                    emconfirm = 0
+                    return ('two emails are different')
+                if paconfirm == 1:
+                    if stat == '1' or stat == '0':
+                        cursor.execute(insert,(usern, passw, stat))
+                        db.commit()
+                        cursor.close()
+                        db.close()
+                        return ('regi ok')
+                    else:
+                        return ('status invalid')
+                else:
+                    return ('fail')
+            else:
+                return ('your username has been used')
+        else:
+            return ('your code is invalid')
+
+
+
+@testserver.route('/locimg/<location>', methods=['GET','POST'])
+def locimg(location):
+    """  locimg function
+         --------------
+
+         download the needed image of a certain location. filename should include the  extension
+    """
+    return send_from_directory(directory='static\img',filename=location, as_attachment=True)
 
 
 
