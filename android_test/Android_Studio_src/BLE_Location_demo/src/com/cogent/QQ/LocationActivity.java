@@ -48,7 +48,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private DBHelper dbHelper;
 
 	float scalesize = 1;
-	private int current_map = 0; 
+	private int current_map = -1;
 	private int mapid = 0;
     private String cur_rss="0,0,0";
     
@@ -79,8 +79,9 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         mComm.doVolleyGet(BLConstants.API_TEST,"myTag");
         */
 		initView();
-        //String mapurl = BLConstants.API_TEST3;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
-        //downloadMap(mapurl);
+        Map<String, String> query_pos_map = new HashMap<String, String>();
+        query_pos_map.put("rss", "0,0,0");
+        mComm.doVolleyPost(BLConstants.API_TEST5,query_pos_map, Communications.TAG_QUERY_POSITION);
 	}
 
     @Override
