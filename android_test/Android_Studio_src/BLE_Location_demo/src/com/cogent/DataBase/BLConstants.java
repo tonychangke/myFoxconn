@@ -8,15 +8,16 @@ public interface BLConstants {
     //Server
     public static final String URL_SERVER = "61.129.93.20";
     public static final String URL_COMPANY = "10.116.57.136";
-    public static final String URL_Service = "http://192.168.1.100/";//"http://61.129.93.20/xtalball/Beacon/Services/";
-    public static final int PORT_SERVER = 80;
+    public static final String URL_Service = "http://202.120.36.137:5000/";//"http://192.168.1.100/";//"http://61.129.93.20/xtalball/Beacon/Services/";
+    public static final int PORT_SERVER = 5000;
     public static final String KEY_SESSION = "PHPSESSID";
 
     //APIs
     public static final String API_TEST = URL_Service + "user";
     public static final String API_TEST2 = "http://www.baidu.com";
     public static final String API_TEST3 = URL_Service + "static/images/1.bmp";
-    public static final String API_TEST4 = URL_Service + "static/images/";
+    public static final String API_TEST4 = URL_Service + "locimg/";//"static/images/";
+    public static final String API_TEST5 = URL_Service + "Lyy_test_rss";//"upload_rss/";
 
     public static final String API_REGISTER = URL_Service + "register";
     public static final String API_REGISTER_BY_PHONE = URL_Service + "registerByPhone";
@@ -25,7 +26,7 @@ public interface BLConstants {
     public static final String API_CHANGE_INFO = URL_Service + "changeuserinfo";
     public static final String API_QUERY_INFO = URL_Service + "queryuserinfo";
     public static final String API_QUERY_MAP = URL_Service + "querymap";
-    public static final String API_QUERY_MAP_BY_MAPID = URL_Service + "image_request";//"querymapbymapid";
+    public static final String API_QUERY_MAP_BY_MAPID = URL_Service + "Lyy_test_map";//"image_request";//"querymapbymapid";
     public static final String API_QUERY_POSITION = URL_Service + "queryposition";
     public static final String API_QUERY_POSITION_BY_MAC = URL_Service + "querypositionbymac";
     public static final String API_QUERY_POSITION_BY_UID = URL_Service + "image_request";//"querypositionbyuid";

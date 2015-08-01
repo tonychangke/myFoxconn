@@ -1,5 +1,19 @@
 #This file is the test-android-program for map loading by Henry Lee
 
+
+更新于2015/8/1
+
+此次的测试版本直接连接acemap服务器
+在搜索框输入rss信息后点搜索即可定位，可以能够自动切换地图
+
+rss信息格式为"rss1,rss2,rss3"，三个rss都为整数
+服务器端数据库里可供测试的rss地址有5个
+0,0,0 -  0,0,4
+
+
+
+
+**************************************************************************
 When use this file:
 
 requirement:
