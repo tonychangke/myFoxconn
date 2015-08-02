@@ -35,6 +35,8 @@ import com.cogent.Communications.BLIObserver;
 import com.cogent.util.HttpUtil;
 import com.cogent.util.TaskUtil;
 
+import javax.sql.CommonDataSource;
+
 public class LocationActivity extends BaseActivity implements BLIObserver {
     private static final String DEBUG_TAG = "LocationActivity";
     protected static BeaconService mBoundService = null;
@@ -46,20 +48,28 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private DBHelper dbHelper;
 
 	float scalesize = 1;
-	private int current_map = 0; 
+	private int current_map = -1;
 	private int mapid = 0;
+    private String cur_rss="0,0,0";
     
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "onCreate");
+        Log.e("XOXOXOXOX", "这里还好11");
         mBoundService = WelcomeActivity.getBoundService();
+        Log.e("XOXOXOXOX", "这里还好12");
         WelcomeActivity.registerObserver(this);
+        Log.e("XOXOXOXOX", "这里还好13");
 		setContentView(R.layout.tab_view);
+        Log.e("XOXOXOXOX", "这里还好14");
 		ContactUtils.init(this);
+        Log.e("XOXOXOXOX", "这里还好15");
 		tabbar = new ViewTabber(this);
+        Log.e("XOXOXOXOX", "这里还好16");
 		dbHelper = new DBHelper(this);
+        Log.e("XOXOXOXOX", "这里还好17");
 
         map = (ImageMap) findViewById(R.id.imagemap);
         /* 这是测试本地服务器post和get请求的代码
@@ -69,8 +79,9 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         mComm.doVolleyGet(BLConstants.API_TEST,"myTag");
         */
 		initView();
-        String mapurl = BLConstants.API_TEST3;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
-        downloadMap(mapurl);
+        Map<String, String> query_pos_map = new HashMap<String, String>();
+        query_pos_map.put("rss", "0,0,0");
+        mComm.doVolleyPost(BLConstants.API_TEST5,query_pos_map, Communications.TAG_QUERY_POSITION);
 	}
 
     @Override
@@ -78,7 +89,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         super.onResume();
         Log.d(DEBUG_TAG, "onResume");
         if (mBoundService != null)
-            mBoundService.startScan();
+            mBoundService.startScan(cur_rss);
     }
     
     @Override
@@ -134,8 +145,8 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
 				System.out.println(btn_search.getText().toString().trim());
                 Map<String, String> query_pos_map = new HashMap<String, String>();
                 //query_pos_map.put(BLConstants.ARG_USER_ID, etSearch.getText().toString().trim());
-                query_pos_map.put("mapid",etSearch.getText().toString().trim());
-                mComm.doVolleyPost(BLConstants.API_QUERY_POSITION_BY_UID, query_pos_map, Communications.TAG_QUERY_POSITION);
+                query_pos_map.put("rss", etSearch.getText().toString().trim());
+                mComm.doVolleyPost(BLConstants.API_TEST5,query_pos_map, Communications.TAG_QUERY_POSITION);
 			}
         });
 	}
@@ -154,23 +165,26 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     
     @Override
     public void onSuccess(String tag, String response) {
-
+        Map<String, String> tmpmap = new HashMap<String, String>();
         /*/test
         String mapurl = BLConstants.API_TEST3;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
         downloadMap(mapurl);
         //test end*/
 
         if (tag.equals(Communications.TAG_QUERY_MAP)) {
-            String mapurl = BLConstants.API_TEST3;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
+            String mapurl = BLConstants.API_TEST4 +response;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
             downloadMap(mapurl);
+            //showPostion(100,100);
         }
         if (tag.equals(Communications.TAG_QUERY_POSITION)) {
-            String mapurl = BLConstants.API_TEST4+response;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
-            downloadMap(mapurl);
-            if (response.isEmpty())
+            if (response.isEmpty()) {
+
+                tmpmap.put("mapid", response.split(",")[0]);
+                mComm.doVolleyPost(BLConstants.API_TEST5, tmpmap, Communications.TAG_QUERY_MAP);
                 Log.d(DEBUG_TAG, tag + ": empty response");
+            }
             else
-                parseLocation(response, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION);
+               parseLocation(response, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION);
         }
 
     }
@@ -180,7 +194,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     }
     @Override
     public void onImageResponse(String tag, Bitmap response) {
-        //test
+        /*/test
         Log.d(DEBUG_TAG, "Resize the map.");
         scalesize = TaskUtil.calcScaleSize(response);
         Bitmap resizedBmp = TaskUtil.reSizeBitmap(response, scalesize);
@@ -189,8 +203,8 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         dbHelper.insertOrUpdate(mapid, mapid, "",scalesize, os.toByteArray());
 
         map.setMapBitmap(resizedBmp);
-        //test end
-        /*
+        //test end */
+
         if (tag.equals(Communications.TAG_DOWNLOAD_MAP)) {
             if (response == null || response.getHeight() == 0 || response.getWidth() == 0)
                 Log.d(DEBUG_TAG, "null bitmap");
@@ -206,7 +220,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 map.setMapBitmap(resizedBmp);
             }
         }
-        */
+
     }
     
     public void getMapInfo(final int mapid)
@@ -234,18 +248,18 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private void parseLocation(String args, final int type) {
         Log.d(DEBUG_TAG, "parseLocation type: " + type);
         int positionX, positionY;
-        
-        positionX = HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_X);
-        positionY = HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_Y);
-        mapid = HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_MAP_ID);
+        String[] tmp = args.split(",");
+        positionX =Integer.parseInt(tmp[1]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_X);
+        positionY = Integer.parseInt(tmp[2]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_Y);
+        mapid = Integer.parseInt(tmp[0]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_MAP_ID);
         
         if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION) {
             String messages = HttpUtil.parseJson(args,BLConstants.ARG_POSITION_MSG);
             if (!messages.isEmpty())
                 showNotification(messages);
         }
-        
-        if (mapid != current_map && mapid != 0)
+        Log.e("XOXOXOOX",String.valueOf(mapid));
+        if (mapid != current_map )//&& mapid != 0)
         {
             Bitmap findmap = dbHelper.queryMap(mapid);
             if(findmap == null)
@@ -278,7 +292,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     }
     
     public void onBLUpdate(int notificationType, String args) {
-        switch (notificationType) {
+        /*switch (notificationType) {
             case BLNotifier.TYPE_BLE_NOT_SUPPORT:
                 showNotification(R.string.ble_not_supported);
                 break;
@@ -291,6 +305,6 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 break;
             default:
                 break;
-        }
+        }*/
     }
 }

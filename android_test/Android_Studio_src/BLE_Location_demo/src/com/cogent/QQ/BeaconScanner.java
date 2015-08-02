@@ -2,13 +2,14 @@ package com.cogent.QQ;
 
 import java.util.Map;
 import java.util.HashMap;
-
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
+//import android.bluetooth.BluetoothManager;
 import android.content.pm.PackageManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
@@ -20,6 +21,21 @@ import com.cogent.Communications.BLNotifier;
 import com.cogent.DataBase.BLConstants;
 import com.cogent.Communications.Communications;
 
+//package com.example.adr_client;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import android.net.wifi.WifiManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 
 /**
  * Created by shawn on 3/18/15.
@@ -44,105 +60,93 @@ public class BeaconScanner implements
 
     private long current_timer;
     private long last_timer;
-    
+    ////
+    static Object sync = new Object();
+    static int TESTTIME=25;
+    static int TESTINTERVAL=1000;
+    private String[] APLIST = new String[10];
+    private Vector<String> scanned = null;
+    private int[] APRSS=new int[10];
+    private int p;
+    private int APNUM=10;
+    WifiManager wm = null;
+
+    ////
     public BeaconScanner(Context context) {
         mContext = context;
-
+       // wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         mComm = new Communications(this);
         mComm.setOnResponseListener(this);
         mComm.setOnErrorResponseListener(this);
     }
-    
-    public void start() {
-        checkScanner();
-        if (!App.getCookie().isEmpty())
-            mLogin = true;
 
-        Log.d(DEBUG_TAG, "start Beacon scanner");
-        Log.d(DEBUG_TAG, "mScannerAvailable is " + mScannerAvailable);
-        if (mScannerAvailable && mLogin) {
-            if (!mScanning) {
-                scanLeDevice(true);
-            } else {
-                Log.d(DEBUG_TAG, "Scanner already started");
-            }
-        } else {
-            Log.d(DEBUG_TAG, "create scanner failed");
-        }
+    public void start(String rss) {
+        //checkScanner();
+
+
+        this.mScanning=false;
+        scanLeDevice(rss);
+//        if (!App.getCookie().isEmpty())
+//            mLogin = true;
+//
+//        Log.d(DEBUG_TAG, "start Beacon scanner");
+//        Log.d(DEBUG_TAG, "mScannerAvailable is " + mScannerAvailable);
+//        if (mScannerAvailable && mLogin) {
+//            if (!mScanning) {
+//                scanLeDevice(true);
+//            } else {
+//                Log.d(DEBUG_TAG, "Scanner already started");
+//            }
+//        } else {
+//            Log.d(DEBUG_TAG, "create scanner failed");
+//        }
     }
 
     public void stop() {
         Log.d(DEBUG_TAG, "stop Beacon scanner");
         if (mScanning) {
             RequestManager.cancelAll(this);
-            scanLeDevice(false);
+            scanLeDevice("-");
         } else {
             Log.d(DEBUG_TAG, "Scanner is not running");
         }
     }
 
-    private void checkScanner() {
-        if (!mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            mScannerAvailable = false;
-            BLNotifier.notifyUi(BLNotifier.TYPE_BLE_NOT_SUPPORT, null);
-        }
+//    private void checkScanner() {
+//        if (!mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//            mScannerAvailable = false;
+//            BLNotifier.notifyUi(BLNotifier.TYPE_BLE_NOT_SUPPORT, null);
+//        }
+//
+//        final BluetoothManager bluetoothManager =
+//                (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
+//        mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
+//            // TODO jump to bluetooth setting
+//            mScannerAvailable = false;
+//            BLNotifier.notifyUi(BLNotifier.TYPE_BLE_NOT_ENABLED, null);
+//        }
+//    }
 
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-            // TODO jump to bluetooth setting
-            mScannerAvailable = false;
-            BLNotifier.notifyUi(BLNotifier.TYPE_BLE_NOT_ENABLED, null);
-        }
-    }
-
-    private void scanLeDevice(final boolean enable) {
-        if (enable && !mScanning) {
+    private void scanLeDevice(String rss) {
+        if (rss!="-" && !mScanning) {
             mScanning = true;
-            current_timer = System.currentTimeMillis();
-            mBluetoothAdapter.startLeScan(mLeScanCallback);
-            Log.d(DEBUG_TAG, "start scanning");
+            current_timer = System.currentTimeMillis();          ;
+            Map<String, String> track_map = new HashMap<String, String>();
+            track_map.put("rss", rss);
+            mComm.doVolleyPost(BLConstants.API_TEST5, track_map, Communications.TAG_SINGLE_TRACK);
         } else {
             mScanning = false;
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            // mBluetoothAdapter.stopLeScan(mLeScanCallback);
             Log.d(DEBUG_TAG, "stop scanning");
         }
     }
-    
-    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
-        @Override
-        public void onLeScan(final BluetoothDevice device,final int rssi, byte[] scanRecord) {
-            String record = "";
-            record = device.getName();
 
-            if (record == null)
-                return;
 
-            if (!record.equals("InFocusBeacon"))
-                return;
-            
-            if( rssi >= -80 )
-            {
-                last_timer = System.currentTimeMillis();
-                if ((last_timer - current_timer ) > 2000 )
-                {
-                    test_mac[i] = device.getAddress();
-                    test_rssi[i] = rssi;
-                    current_timer = System.currentTimeMillis();
-                    post_mac = analyse(test_mac,test_rssi);
-                }
-                else
-                {
-                    test_mac[i] = device.getAddress();
-                    test_rssi[i] = rssi;
-                    i++;
-                }
-            }
-        }
-    };
-    
+
+
+
     public String analyse(String[] mac,int[] rssi) {
 
         int rssi_test ;
@@ -216,14 +220,14 @@ public class BeaconScanner implements
         //record_mac = mac_test;
         if (!record_mac.equals(mac_test)){
             record_mac = mac_test;
-    
+
             SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String date = sDateFormat.format(new java.util.Date());
-    
+
             Map<String, String> track_map = new HashMap<String, String>();
             track_map.put(BLConstants.ARG_LOCAL_TIME, date);
             track_map.put(BLConstants.ARG_DEV_MAC, record_mac);
-    
+
             Log.d(DEBUG_TAG, "start tracking...");
             mComm.doVolleyPost(BLConstants.API_POST_SINGLE_TRACK_DATA, track_map, Communications.TAG_SINGLE_TRACK);
         }
@@ -233,6 +237,7 @@ public class BeaconScanner implements
     @Override
     public void onSuccess(String tag, String response) {
         if (tag.equals(Communications.TAG_SINGLE_TRACK)) {
+
             BLNotifier.notifyUi(BLNotifier.TYPE_AUTO_UPDATE_LOCATION, response);
         }
 
@@ -253,6 +258,7 @@ public class BeaconScanner implements
     @Override
     public void onResponse(String tag, String response) {
         Log.d(DEBUG_TAG, "TAG:" + tag + "---Response:" + response);
+        /*
 
         String result = HttpUtil.parseJson(response, BLConstants.ARG_REQ_RESULT);
         Boolean parse_result = result.equals(BLConstants.MSG_PASS);
@@ -261,6 +267,7 @@ public class BeaconScanner implements
             onSuccess(tag, response);
         else
             onFail(tag, response);
+        */
     }
 
     @Override

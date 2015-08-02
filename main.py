@@ -72,7 +72,7 @@ def login():
         location = localization.loc(rss) # apply localization function
 
         # connect to db
-        db = MySQLdb.connect(host='localhost', user='root', passwd='wuyou', db='noyou_db') 
+        db = MySQLdb.connect(host='localhost', user='root', passwd='xwang8', db='foxconn') 
         cursor = db.cursor()        
         # verify user info
         sql = "select * from account where username=%s and password=%s and status=%s"
@@ -114,7 +114,7 @@ def query():
         time = request.form.get('time')
 
         # connect to db
-        db = MySQLdb.connect(host='localhost', user='root', passwd='wuyou', db='noyou_db') 
+        db = MySQLdb.connect(host='localhost', user='root', passwd='xwang8', db='foxconn') 
         cursor = db.cursor()        
 
         # verify user info
@@ -160,7 +160,7 @@ def register():
         cemail = request.form.get('cemail')
         code = request.form.get('invicode')
         # connect to db
-        db = MySQLdb.connect(host='localhost', user='root', passwd='wuyou', db='noyou_db') 
+        db = MySQLdb.connect(host='localhost', user='root', passwd='xwang8', db='foxconn') 
         cursor = db.cursor()
         codeveri = "select * from invitation_code where invicode=%s"
         exist = cursor.execute(codeveri,(code))
@@ -207,10 +207,31 @@ def locimg(location):
 
          download the needed image of a certain location. filename should include the  extension
     """
-    return send_from_directory(directory='static\img',filename=location, as_attachment=True)
+    return send_from_directory(directory='static/img',filename=location, as_attachment=True)
 
+
+@testserver.route('/Lyy_test_rss/', methods=['POST'])
+def Lyy_rss():
+    rss_info = request.form['rss']
+    rss = rss_info.split(',')
+    sql = "select mapid,position_x,position_y from  rss_to_position where rss1=%s and rss2=%s and rss3=%s"
+    params = (rss[0],rss[1],rss[2])
+    cursor.execute(sql,params)
+    result = cursor.fetchall()
+    return "%d,%d,%d"%(result[0][0],result[0][1],result[0][2])
+
+@testserver.route('/Lyy_test_map/', methods=['POST'])
+def Lyy_map():
+    img = request.form['mapid']
+    db = MySQLdb.connect(host='localhost', user='root', passwd='xwang8', db='foxconn') 
+    cursor = db.cursor()        
+    sql = "select mapurl from map_db where mapid="+img
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    
+    return results[0][0]
 
 
 if __name__=='__main__':
   
-    testserver.run(host='0.0.0.0', port=5000,debug=True)
+    testserver.run(host='192.168.0.185', port=5000,debug=True)

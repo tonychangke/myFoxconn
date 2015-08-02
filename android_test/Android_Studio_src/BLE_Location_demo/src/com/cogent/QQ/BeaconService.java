@@ -28,7 +28,7 @@ public class BeaconService extends Service {
     private BroadcastReceiver mConnReceiver;
     private BeaconScanner mBeaconScanner = null;
     private final IBinder mBinder = new BLBinder();
-    
+
     public class BLBinder extends Binder {
         BeaconService getService() {
             return BeaconService.this;
@@ -40,21 +40,21 @@ public class BeaconService extends Service {
         Log.d(DEBUG_TAG, "bind");
         return mBinder;
     }
-    
+
     public void startScanner() {
         Log.d(DEBUG_TAG, "start a scanner");
         // init a scanner
         mBeaconScanner = new BeaconScanner(appContext);
-        mBeaconScanner.start();
+        mBeaconScanner.start("0,0,0");
     }
 
     public void stopScanner() {
         stopScan();
     }
 
-    public void startScan() {
+    public void startScan(String rss) {
         if (mBeaconScanner != null) {
-            mBeaconScanner.start();
+            mBeaconScanner.start(rss);
         }
     }
 
@@ -75,7 +75,7 @@ public class BeaconService extends Service {
     public void unregisterObserver(BLIObserver obs) {
         BLNotifier.unregisterObserver(obs);
     }
-    
+
     private void checkServerReachability(Context context, Intent intent) {
         final Context taskContext = context;
         final Intent taskIntent = intent;
@@ -87,13 +87,13 @@ public class BeaconService extends Service {
 
             @Override
             protected void onPostExecute(Boolean result) {
-                Map<String, String> args = new HashMap<String, String>();
-                args.put(BLNotifier.ARG_SERVER_REACHABLE, String.valueOf(result));
-                //BLNotifier.notifyUi(BLNotifier.TYPE_UPDATE_NETWORK, args);
+                //Map<String, String> args = new HashMap<String, String>();
+                //args.put(BLNotifier.ARG_SERVER_REACHABLE, String.valueOf(result));
+               // BLNotifier.notifyUi(BLNotifier.TYPE_UPDATE_NETWORK, args);
             }
         }.execute();
     }
-    
+
     @Override
     public void onCreate() {
         Log.d(DEBUG_TAG, "service onCreate");
@@ -124,7 +124,7 @@ public class BeaconService extends Service {
         super.onDestroy();
 
         stopScanner();
-        
+
         if (mConnReceiver != null)
             unregisterReceiver(mConnReceiver);
 
