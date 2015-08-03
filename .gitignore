@@ -1,2 +1,6 @@
 android_test/Android_Studio_src/ACTIVITY_ENTRY_NAME/build/
 android_test/Android_Studio_src/BLE_Location_demo/build/
+android_test/Android_Studio_src/Android_Studio_src.iml
+android_test/Android_Studio_src/BLE_Location_demo/BLE_Location_demo.iml
+android_test/Android_Studio_src/build/
+android_test/Android_Studio_src/local.properties
