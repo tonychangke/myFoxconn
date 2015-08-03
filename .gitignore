@@ -4,3 +4,5 @@ android_test/Android_Studio_src/Android_Studio_src.iml
 android_test/Android_Studio_src/BLE_Location_demo/BLE_Location_demo.iml
 android_test/Android_Studio_src/build/
 android_test/Android_Studio_src/local.properties
+android_test/Android_Studio_src/.gradle/2.2.1/taskArtifacts/
+android_test/Android_Studio_src/.idea/workspace.xml
