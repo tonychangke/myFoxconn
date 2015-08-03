@@ -65,7 +65,7 @@ public class BaseActivity extends Activity implements
         Log.d(DEBUG_TAG, "TAG:" + tag + "--Response:" + response);
         
         String result = HttpUtil.parseJson(response, BLConstants.ARG_REQ_RESULT);
-        //Boolean parse_result = result.equals(BLConstants.MSG_PASS);
+       //Boolean parse_result = result.equals(BLConstants.MSG_PASS);
         onSuccess(tag,response);
         /*
         if (parse_result)

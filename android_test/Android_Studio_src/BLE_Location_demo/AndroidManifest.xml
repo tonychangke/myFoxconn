@@ -6,8 +6,13 @@
     android:versionName="1.0" >
 
     <uses-sdk
+<<<<<<< HEAD
         android:minSdkVersion="17"
         android:targetSdkVersion="20" />
+=======
+        android:minSdkVersion="16"
+        android:targetSdkVersion="16" />
+>>>>>>> dev
     
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
