@@ -145,35 +145,39 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
             }
         });
 
-        
+        // set the offline map
+        Drawable d = getResources().getDrawable(R.drawable.floor4_0);
+
+        Bitmap OfflineMap = ((BitmapDrawable)d).getBitmap();
+        scalesize = TaskUtil.calcScaleSize(OfflineMap);
+        Bitmap resizedBmp = TaskUtil.reSizeBitmap(OfflineMap, scalesize);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
+        dbHelper.insertOrUpdate(mapid, mapid, "", scalesize, os.toByteArray());
+        map.setMapBitmap(resizedBmp);
+
+        Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
+        parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+
         btn_search.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
                 mComm.doVolleyPost(BLConstants.API_TEST_CONNECT, null, Communications.TAG_TEST_CONNECT);
                 Log.e("Step Counter", StepCal.getsteps() + "");
 
-                if (isOnline) {
-                    System.out.println(btn_search.getText().toString().trim());
-                    Map<String, String> query_pos_map = new HashMap<String, String>();
-                    //query_pos_map.put(BLConstants.ARG_USER_ID, etSearch.getText().toString().trim());
-                    query_pos_map.put("rss", etSearch.getText().toString().trim());
-                    mComm.doVolleyPost(BLConstants.API_TEST5, query_pos_map, Communications.TAG_QUERY_POSITION);
-                } else {
-                    // set the offline map
-                    Drawable d = getResources().getDrawable(R.drawable.floor4_0);
+//                if (isOnline) {
+//                    System.out.println(btn_search.getText().toString().trim());
+//                    Map<String, String> query_pos_map = new HashMap<String, String>();
+//                    //query_pos_map.put(BLConstants.ARG_USER_ID, etSearch.getText().toString().trim());
+//                    query_pos_map.put("rss", etSearch.getText().toString().trim());
+//                    mComm.doVolleyPost(BLConstants.API_TEST5, query_pos_map, Communications.TAG_QUERY_POSITION);
+//                } else {
 
-                    Bitmap OfflineMap = ((BitmapDrawable)d).getBitmap();
-                    scalesize = TaskUtil.calcScaleSize(OfflineMap);
-                    Bitmap resizedBmp = TaskUtil.reSizeBitmap(OfflineMap, scalesize);
-                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                    dbHelper.insertOrUpdate(mapid, mapid, "",scalesize, os.toByteArray());
-                    map.setMapBitmap(OfflineMap);
                     Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
                     parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
 
 
-                }
+//                }
             }
         });
 	}

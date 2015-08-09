@@ -104,7 +104,9 @@ public class TaskUtil {
 
         float scaleWidth = ((float)xdpi) / bmpWidth;
         float scaleHeight = (((float)ydpi)) / bmpHeight;
-        scalesize = scaleWidth  > scaleHeight ? scaleWidth : scaleHeight;
+
+        scalesize = (scaleWidth < scaleHeight) ? scaleWidth : scaleHeight;
+        Log.e("scale size",Float.toString(scaleWidth)+","+Float.toString(scaleHeight)+","+Float.toString(scalesize));
         System.out.println("scalesize" + scalesize);
         
         return scalesize;
