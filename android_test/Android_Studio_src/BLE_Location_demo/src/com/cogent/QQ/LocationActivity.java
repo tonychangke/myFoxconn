@@ -57,8 +57,8 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     float scalesize = 1;
 	private int current_map = -1;
 	private int mapid = 0;
-    private int cur_x = 0;
-    private int cur_y = 0;
+    private int cur_x = 1; // What is the scale? 1 mean what?
+    private int cur_y = 1;
     private String cur_rss="0,0,0";
 
 
@@ -155,6 +155,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
         dbHelper.insertOrUpdate(mapid, mapid, "", scalesize, os.toByteArray());
         map.setMapBitmap(resizedBmp);
+        StepCal.startstep(cur_x,cur_y);
 
         Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
         parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
@@ -295,13 +296,14 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     }
     
     public boolean showPostion(double x, double y){ //该方法可以实现一个圆点，用于和bubble进行绑定，并且最终显示在地图上
+        Log.d("Show position",Double.toString(x)+","+Double.toString(x));
         CircleShape black = new CircleShape("NO", Color.BLACK); //Color.BLUE，圆点的颜色
         black.setValues(String.format("%.5f,%.5f,15",x*scalesize,y*scalesize)); //设置圆点的位置和大小
         map.addShapeAndRefToBubble(black); //加到地图上
         return true;
     }
 
-        private void parseLocation(String args, final int type) {
+    private void parseLocation(String args, final int type) {
             Log.d(DEBUG_TAG, "parseLocation type: " + type);
             int positionX, positionY;
             String[] tmp = args.split(",");

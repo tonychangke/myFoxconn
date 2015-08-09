@@ -95,7 +95,7 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
 		TranslateAnimation movingAnimation = new TranslateAnimation(from.x,to.x/4,from.y,to.y);
 		movingAnimation.setOnAnimationListener(this);
 		movingAnimation.setInterpolator(new DecelerateInterpolator());
-		movingAnimation.setDuration(500);
+		movingAnimation.setDuration(2000);
 		movingAnimation.setFillAfter(true);
 		viewForAnimation.startAnimation(movingAnimation);
 
