@@ -12,6 +12,7 @@ import net.yoojia.imagemap.core.CircleShape;
 import net.yoojia.imagemap.core.Shape;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.graphics.drawable.Drawable;
 
 
 import com.cogent.Communications.Communications;
@@ -125,30 +127,30 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
 		});
 
         etSearch.addTextChangedListener(new TextWatcher() {
-    		public void onTextChanged(CharSequence s, int start, int before, int count) {
-    			// TODO Auto-generated method stub
-    		}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // TODO Auto-generated method stub
+            }
 
-    		public void beforeTextChanged(CharSequence s, int start, int count,
-    				int after) {
-    			// TODO Auto-generated method stub
-    		}
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+            }
 
-    		public void afterTextChanged(Editable s) {
-    			if (s.length() == 0) {
-    				ivDeleteText.setVisibility(View.GONE);
-    			} else {
-    				ivDeleteText.setVisibility(View.VISIBLE);
-    			}
-    		}
-    	});
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    ivDeleteText.setVisibility(View.GONE);
+                } else {
+                    ivDeleteText.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
         
         btn_search.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
+
+            public void onClick(View v) {
                 mComm.doVolleyPost(BLConstants.API_TEST_CONNECT, null, Communications.TAG_TEST_CONNECT);
-                Log.e("Step Counter",StepCal.getsteps()+"");
+                Log.e("Step Counter", StepCal.getsteps() + "");
 
                 if (isOnline) {
                     System.out.println(btn_search.getText().toString().trim());
@@ -156,15 +158,23 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                     //query_pos_map.put(BLConstants.ARG_USER_ID, etSearch.getText().toString().trim());
                     query_pos_map.put("rss", etSearch.getText().toString().trim());
                     mComm.doVolleyPost(BLConstants.API_TEST5, query_pos_map, Communications.TAG_QUERY_POSITION);
+                } else {
+                    // set the offline map
+                    Drawable d = getResources().getDrawable(R.drawable.floor4_0);
+
+                    Bitmap OfflineMap = ((BitmapDrawable)d).getBitmap();
+                    scalesize = TaskUtil.calcScaleSize(OfflineMap);
+                    Bitmap resizedBmp = TaskUtil.reSizeBitmap(OfflineMap, scalesize);
+                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    dbHelper.insertOrUpdate(mapid, mapid, "",scalesize, os.toByteArray());
+                    map.setMapBitmap(OfflineMap);
+                    Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
+                    parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+
+
                 }
-                else {
-                    Log.e("Step X Y",StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
-                    parseLocation(mapid+","+StepCal.get_step_offset_X()+","+StepCal.get_step_offset_Y(),2);
-
-
-
-                }
-			}
+            }
         });
 	}
 	
@@ -181,7 +191,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     }
     @Override
     public void onFail(String tag, String response){
-        Log.e("EEEEEEEEE","abcd");
+        Log.e("EEEEEEEEE", "abcd");
         //parseLocation("0,250,250", 2);
     }
     @Override
@@ -296,7 +306,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
             mapid = Integer.parseInt(tmp[0]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_MAP_ID);
 
             if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION) {
-                String messages = HttpUtil.parseJson(args,BLConstants.ARG_POSITION_MSG);
+                String messages = HttpUtil.parseJson(args, BLConstants.ARG_POSITION_MSG);
                 if (!messages.isEmpty())
                     showNotification(messages);
             }
@@ -331,7 +341,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                         logo.setImageResource(R.drawable.location_icon_yellow);
                 }
             });
-            Log.e("Position Showing",positionX+" , " + positionY);
+            Log.e("Position Showing", positionX + " , " + positionY);
             showPostion(positionX, positionY);
         }
     
