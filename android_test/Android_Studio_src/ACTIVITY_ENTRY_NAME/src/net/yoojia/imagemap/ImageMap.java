@@ -97,7 +97,7 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
 		movingAnimation.setInterpolator(new DecelerateInterpolator());
 		movingAnimation.setDuration(2000);
 		movingAnimation.setFillAfter(true);
-		viewForAnimation.startAnimation(movingAnimation);
+		//viewForAnimation.startAnimation(movingAnimation);
 
 		PointF offset = highlightImageView.getAbsoluteOffset();
 		shape.onTranslate(offset.x , offset.y);

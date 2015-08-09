@@ -57,8 +57,8 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     float scalesize = 1;
 	private int current_map = -1;
 	private int mapid = 0;
-    private int cur_x = 1; // What is the scale? 1 mean what?
-    private int cur_y = 1;
+    private int cur_x = 285; // What is the scale? 1 mean what? not pixel. 285 correspond to the corridor
+    private int cur_y = 300;
     private String cur_rss="0,0,0";
 
 
@@ -173,9 +173,12 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
 //                    query_pos_map.put("rss", etSearch.getText().toString().trim());
 //                    mComm.doVolleyPost(BLConstants.API_TEST5, query_pos_map, Communications.TAG_QUERY_POSITION);
 //                } else {
-
-                    Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
-                    parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+                    cur_x = cur_x;
+                    cur_y = cur_y +10;
+                    //Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
+                    Log.e("Current xy", Integer.toString(cur_x)+","+Integer.toString(cur_y));
+                    //parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+                parseLocation(mapid + "," + cur_x + "," + cur_y, 2);
 
 
 //                }
@@ -231,7 +234,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 Log.e("WWWWWWWWW","Location_onSuccess_QueryPosition_parseLocation");
                 cur_x = Integer.parseInt(response.split(",")[1]);
                 cur_y = Integer.parseInt(response.split(",")[2]);
-                parseLocation(response, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION);
+                //parseLocation(response, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION); //comment this so we can observe offline case
             }
             /*
             if (response.isEmpty()) {
