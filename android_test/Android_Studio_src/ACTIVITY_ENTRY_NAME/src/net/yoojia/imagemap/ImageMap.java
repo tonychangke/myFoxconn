@@ -92,12 +92,13 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
 		// Move the center point of the image to the target shape center.
 		PointF from = highlightImageView.getAbsoluteCenter();
 		PointF to = shape.getCenterPoint();
-		TranslateAnimation movingAnimation = new TranslateAnimation(from.x,to.x/4,from.y,to.y);
+		TranslateAnimation movingAnimation = new TranslateAnimation(from.x,to.x/4,from.y,to.y); //Why is 4?
+
 		movingAnimation.setOnAnimationListener(this);
 		movingAnimation.setInterpolator(new DecelerateInterpolator());
-		movingAnimation.setDuration(2000);
-		movingAnimation.setFillAfter(true);
-		//viewForAnimation.startAnimation(movingAnimation);
+		movingAnimation.setDuration(9000);
+		movingAnimation.setFillAfter(false);
+		viewForAnimation.startAnimation(movingAnimation);
 
 		PointF offset = highlightImageView.getAbsoluteOffset();
 		shape.onTranslate(offset.x , offset.y);

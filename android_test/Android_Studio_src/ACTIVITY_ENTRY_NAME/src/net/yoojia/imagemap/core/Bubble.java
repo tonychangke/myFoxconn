@@ -62,8 +62,8 @@ public class Bubble extends FrameLayout{
 
     private void setBubbleViewAtPosition(PointF center){
         float posX = center.x - view.getWidth()/2;
-        float posY = center.y - view.getHeight();
-		setBubbleViewAtPosition(posX, posY);
+        float posY = center.y - view.getHeight(); //If comment this then the bubble is on pos with offset
+		setBubbleViewAtPosition(posX, posY); //If comment this sentence then no jump.
     }
 
     private void setBubbleViewAtPosition(float x, float y){

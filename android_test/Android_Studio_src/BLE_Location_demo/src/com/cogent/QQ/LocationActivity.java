@@ -58,7 +58,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
 	private int current_map = -1;
 	private int mapid = 0;
     private int cur_x = 285; // What is the scale? 1 mean what? not pixel. 285 correspond to the corridor
-    private int cur_y = 300;
+    private int cur_y = 1000; // This is the pixel on the figure
     private String cur_rss="0,0,0";
 
 
@@ -158,13 +158,13 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         StepCal.startstep(cur_x,cur_y);
 
         Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
-        parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+        //parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
 
         btn_search.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                mComm.doVolleyPost(BLConstants.API_TEST_CONNECT, null, Communications.TAG_TEST_CONNECT);
-                Log.e("Step Counter", StepCal.getsteps() + "");
+            mComm.doVolleyPost(BLConstants.API_TEST_CONNECT, null, Communications.TAG_TEST_CONNECT);
+            Log.e("Step Counter", StepCal.getsteps() + "");
 
 //                if (isOnline) {
 //                    System.out.println(btn_search.getText().toString().trim());
@@ -173,11 +173,24 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
 //                    query_pos_map.put("rss", etSearch.getText().toString().trim());
 //                    mComm.doVolleyPost(BLConstants.API_TEST5, query_pos_map, Communications.TAG_QUERY_POSITION);
 //                } else {
-                    cur_x = cur_x;
-                    cur_y = cur_y +10;
-                    //Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
-                    Log.e("Current xy", Integer.toString(cur_x)+","+Integer.toString(cur_y));
-                    //parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+                cur_x = cur_x;
+                cur_y = cur_y - 20 ;
+                if (cur_y <0 )
+                {
+                    Drawable d = getResources().getDrawable(R.drawable.floor4_0);
+
+                    Bitmap OfflineMap = ((BitmapDrawable)d).getBitmap();
+                    scalesize = TaskUtil.calcScaleSize(OfflineMap);
+                    Bitmap resizedBmp = TaskUtil.reSizeBitmap(OfflineMap, scalesize);
+                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    dbHelper.insertOrUpdate(mapid, mapid, "", scalesize, os.toByteArray());
+                    map.setMapBitmap(resizedBmp);
+                    cur_y = 600;
+                }
+                //Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
+                Log.e("Current xy", Integer.toString(cur_x)+","+Integer.toString(cur_y));
+                //parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
                 parseLocation(mapid + "," + cur_x + "," + cur_y, 2);
 
 
