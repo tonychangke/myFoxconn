@@ -11,7 +11,7 @@ each terminal.
 ### Backend Server
 
 - [Flask](http://flask.pocoo.org)
-- support **1000/second** concurrency
+- support **1000/second** concurrency.
 
 
 ### Front End
@@ -19,4 +19,5 @@ each terminal.
 - Android
 - iOS
 - Html
+
 
