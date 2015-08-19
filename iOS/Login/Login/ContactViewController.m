@@ -6,13 +6,13 @@
 //  Copyright (c) 2014年 NT. All rights reserved.
 //
 
-#import "NTViewController.h"
+#import "ContactViewController.h"
 #import "NTContact.h"
 #import "NTContactGroup.h"
 
 #define kContactToolbarHeight 64
 
-@interface NTViewController ()<UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate>
+@interface ContactViewController ()<UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate>
 {
 
     UITableView * _tableView;
@@ -25,7 +25,7 @@
 
 @end
 
-@implementation NTViewController
+@implementation ContactViewController
 
 - (void)viewDidLoad
 {

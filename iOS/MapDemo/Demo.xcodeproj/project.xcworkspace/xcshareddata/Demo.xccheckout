@@ -5,16 +5,16 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>3E381D7B-8D3D-465F-B3FB-30C8F1D1990C</string>
+	<string>6D700C72-C128-47E3-AE5D-18B9AAA23668</string>
 	<key>IDESourceControlProjectName</key>
-	<string>Login</string>
+	<string>Demo</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>2D22002890A1D07650DBFEC2BF9CFD5464EBAF93</key>
 		<string>https://github.com/tonychangke/foxconn_indoor_system.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>iOS/Login/Login.xcodeproj</string>
+	<string>iOS/MapDemo/Demo.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>2D22002890A1D07650DBFEC2BF9CFD5464EBAF93</key>
