@@ -55,19 +55,19 @@
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES) ;
     NSString* path=[[paths objectAtIndex:0]stringByAppendingPathComponent:@"database"] ;
     self->database=[FMDatabase databaseWithPath:path];
+    NSString *createSql=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS '%@'( '%@' TEXT KEY,'%@' TEXT)",DATABASE,USERNAME,PWD];
+    BOOL res=[self->database executeUpdate:createSql];
     if(![self->database open])
     {
         NSLog(@"Open database file error!");
-        NSString *createSql=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS '%@'( '%@' TEXT KEY,'%@' TEXT)",DATABASE,USERNAME,PWD];
-        BOOL res=[self->database executeUpdate:createSql];
-        if(!res)NSLog(@"Create database error!");
-        else
-        {
-            NSString *inserSql=[NSString stringWithFormat:@"INSERT INTO '%@' ('%@','%@') VALUES ('%@','%@')",DATABASE,USERNAME,PWD,@"tony",@"tony"];
-            res=[self->database executeUpdate:inserSql];
-            if(!res)NSLog(@"Add tony error!");
-        }
-
+    }
+    else
+    {
+        NSLog(@"Open database file successfully!");
+        NSString *inserSql=[NSString stringWithFormat:@"INSERT INTO '%@' ('%@','%@') VALUES ('%@','%@')",DATABASE,USERNAME,PWD,@"tony",@"tony"];
+        res=[self->database executeUpdate:inserSql];
+        if(!res)NSLog(@"Add tony error!");
+        else NSLog(@"Add tony successfully!");
     }
     self->hasLogin=FALSE;
     [self->database close];
