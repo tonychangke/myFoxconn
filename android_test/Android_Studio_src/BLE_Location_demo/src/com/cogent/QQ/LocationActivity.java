@@ -1,5 +1,6 @@
 package com.cogent.QQ;
 
+import com.android.volley.VolleyError;
 import com.cogent.util.ContactUtils;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import net.yoojia.imagemap.core.CircleShape;
 import net.yoojia.imagemap.core.Shape;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.graphics.drawable.Drawable;
 
 
 import com.cogent.Communications.Communications;
@@ -34,6 +37,7 @@ import com.cogent.Communications.BLNotifier;
 import com.cogent.Communications.BLIObserver;
 import com.cogent.util.HttpUtil;
 import com.cogent.util.TaskUtil;
+import com.hp.hpl.sparta.xpath.Step;
 
 import javax.sql.CommonDataSource;
 
@@ -41,35 +45,35 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private static final String DEBUG_TAG = "LocationActivity";
     protected static BeaconService mBoundService = null;
     private ImageMap map;
+    private Boolean isOnline = true;
 	ViewTabber tabbar;
+
+    private StepCalculater StepCal;
 	private ImageView ivDeleteText;
 	private EditText etSearch;
 	private Button btn_search;
     private DBHelper dbHelper;
 
-	float scalesize = 1;
+    float scalesize = 1;
 	private int current_map = -1;
 	private int mapid = 0;
+    private int cur_x = 0;
+    private int cur_y = 0;
     private String cur_rss="0,0,0";
-    
-    
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "onCreate");
-        Log.e("XOXOXOXOX", "这里还好11");
         mBoundService = WelcomeActivity.getBoundService();
-        Log.e("XOXOXOXOX", "这里还好12");
+        StepCal = new StepCalculater(this);
+        StepCal.stopstep();
         WelcomeActivity.registerObserver(this);
-        Log.e("XOXOXOXOX", "这里还好13");
 		setContentView(R.layout.tab_view);
-        Log.e("XOXOXOXOX", "这里还好14");
 		ContactUtils.init(this);
-        Log.e("XOXOXOXOX", "这里还好15");
 		tabbar = new ViewTabber(this);
-        Log.e("XOXOXOXOX", "这里还好16");
 		dbHelper = new DBHelper(this);
-        Log.e("XOXOXOXOX", "这里还好17");
 
         map = (ImageMap) findViewById(R.id.imagemap);
         /* 这是测试本地服务器post和get请求的代码
@@ -79,9 +83,11 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         mComm.doVolleyGet(BLConstants.API_TEST,"myTag");
         */
 		initView();
+        /*
         Map<String, String> query_pos_map = new HashMap<String, String>();
         query_pos_map.put("rss", "0,0,0");
         mComm.doVolleyPost(BLConstants.API_TEST5,query_pos_map, Communications.TAG_QUERY_POSITION);
+        */
 	}
 
     @Override
@@ -106,7 +112,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         Log.d(DEBUG_TAG, "onDestroy");
         WelcomeActivity.unregisterObserver(this);
     }
-    
+
 	public void initView() {
 		ivDeleteText = (ImageView) findViewById(R.id.ivDeleteText);
         //btn_search = (ImageView) findViewById(R.id.btnSearch);
@@ -121,33 +127,58 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
 		});
 
         etSearch.addTextChangedListener(new TextWatcher() {
-    		public void onTextChanged(CharSequence s, int start, int before, int count) {
-    			// TODO Auto-generated method stub
-    		}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // TODO Auto-generated method stub
+            }
 
-    		public void beforeTextChanged(CharSequence s, int start, int count,
-    				int after) {
-    			// TODO Auto-generated method stub
-    		}
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+            }
 
-    		public void afterTextChanged(Editable s) {
-    			if (s.length() == 0) {
-    				ivDeleteText.setVisibility(View.GONE);
-    			} else {
-    				ivDeleteText.setVisibility(View.VISIBLE);
-    			}
-    		}
-    	});
-        
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    ivDeleteText.setVisibility(View.GONE);
+                } else {
+                    ivDeleteText.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        // set the offline map
+        Drawable d = getResources().getDrawable(R.drawable.floor4_0);
+
+        Bitmap OfflineMap = ((BitmapDrawable)d).getBitmap();
+        scalesize = TaskUtil.calcScaleSize(OfflineMap);
+        Bitmap resizedBmp = TaskUtil.reSizeBitmap(OfflineMap, scalesize);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
+        dbHelper.insertOrUpdate(mapid, mapid, "", scalesize, os.toByteArray());
+        map.setMapBitmap(resizedBmp);
+
+        Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
+        parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+
         btn_search.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				System.out.println(btn_search.getText().toString().trim());
-                Map<String, String> query_pos_map = new HashMap<String, String>();
-                //query_pos_map.put(BLConstants.ARG_USER_ID, etSearch.getText().toString().trim());
-                query_pos_map.put("rss", etSearch.getText().toString().trim());
-                mComm.doVolleyPost(BLConstants.API_TEST5,query_pos_map, Communications.TAG_QUERY_POSITION);
-			}
+
+            public void onClick(View v) {
+                mComm.doVolleyPost(BLConstants.API_TEST_CONNECT, null, Communications.TAG_TEST_CONNECT);
+                Log.e("Step Counter", StepCal.getsteps() + "");
+
+//                if (isOnline) {
+//                    System.out.println(btn_search.getText().toString().trim());
+//                    Map<String, String> query_pos_map = new HashMap<String, String>();
+//                    //query_pos_map.put(BLConstants.ARG_USER_ID, etSearch.getText().toString().trim());
+//                    query_pos_map.put("rss", etSearch.getText().toString().trim());
+//                    mComm.doVolleyPost(BLConstants.API_TEST5, query_pos_map, Communications.TAG_QUERY_POSITION);
+//                } else {
+
+                    Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
+                    parseLocation(mapid + "," + StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y(), 2);
+
+
+//                }
+            }
         });
 	}
 	
@@ -162,31 +193,56 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         String devicemac = "";
         int rec_rssi = 0;
     }
-    
     @Override
-    public void onSuccess(String tag, String response) {
-        Map<String, String> tmpmap = new HashMap<String, String>();
-        /*/test
-        String mapurl = BLConstants.API_TEST3;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
-        downloadMap(mapurl);
-        //test end*/
+    public void onFail(String tag, String response){
+        Log.e("EEEEEEEEE", "abcd");
+        //parseLocation("0,250,250", 2);
+    }
+    @Override
+    public void onErrorResponse(String tag, VolleyError volleyError) {
+        //Log.e("LLLLLLLLL", volleyError.getMessage(), volleyError);
+        if (tag.equals(Communications.TAG_TEST_CONNECT)){
+            Log.e("Connect Failed","==============");
+            if(isOnline)
+                Log.e("Start Step Calculator","================");
+            StepCal.startstep(cur_x,cur_y);
+            isOnline = false;
 
+        }
+
+    }
+    @Override
+    public void onSuccess(String tag, String response){
         if (tag.equals(Communications.TAG_QUERY_MAP)) {
             String mapurl = BLConstants.API_TEST4 +response;//HttpUtil.parseJson(response, BLConstants.ARG_MAP_URL);
             downloadMap(mapurl);
             //showPostion(100,100);
         }
+        if (tag.equals(Communications.TAG_TEST_CONNECT)){
+            Log.e("Connect Success","=============");
+            if(!isOnline)
+                Log.e("Stop Step Calculator", "==================");
+            StepCal.stopstep();
+            isOnline = true;
+        }
         if (tag.equals(Communications.TAG_QUERY_POSITION)) {
+            if(!response.isEmpty()){
+                Log.e("WWWWWWWWW","Location_onSuccess_QueryPosition_parseLocation");
+                cur_x = Integer.parseInt(response.split(",")[1]);
+                cur_y = Integer.parseInt(response.split(",")[2]);
+                parseLocation(response, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION);
+            }
+            /*
             if (response.isEmpty()) {
-
                 tmpmap.put("mapid", response.split(",")[0]);
                 mComm.doVolleyPost(BLConstants.API_TEST5, tmpmap, Communications.TAG_QUERY_MAP);
                 Log.d(DEBUG_TAG, tag + ": empty response");
             }
-            else
-               parseLocation(response, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION);
+            else {
+                Log.e("WWWWWWWWW","Location_onSuccess_QueryPosition_parseLocation");
+                parseLocation(response, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION);
+            }*/
         }
-
     }
     @Override
     public void refreshUI(){
@@ -244,52 +300,54 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         map.addShapeAndRefToBubble(black); //加到地图上
         return true;
     }
-    
-    private void parseLocation(String args, final int type) {
-        Log.d(DEBUG_TAG, "parseLocation type: " + type);
-        int positionX, positionY;
-        String[] tmp = args.split(",");
-        positionX =Integer.parseInt(tmp[1]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_X);
-        positionY = Integer.parseInt(tmp[2]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_Y);
-        mapid = Integer.parseInt(tmp[0]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_MAP_ID);
-        
-        if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION) {
-            String messages = HttpUtil.parseJson(args,BLConstants.ARG_POSITION_MSG);
-            if (!messages.isEmpty())
-                showNotification(messages);
-        }
-        Log.e("XOXOXOOX",String.valueOf(mapid));
-        if (mapid != current_map )//&& mapid != 0)
-        {
-            Bitmap findmap = dbHelper.queryMap(mapid);
-            if(findmap == null)
-            {
-                getMapInfo(mapid);
-            }
-            else
-            {
-                Log.d(DEBUG_TAG, "Find map in local database.");
-                scalesize = dbHelper.queryScalesize(mapid);
-                map.setMapBitmap(findmap);
-            }
-        }
-        current_map = mapid;
-        map.clearShapes();
 
-        View bubble = getLayoutInflater().inflate(R.layout.popup, null);
-        map.setBubbleView(bubble,new Bubble.RenderDelegate() {
-            @Override
-            public void onDisplay(Shape shape, View bubbleView) {
-                ImageView logo = (ImageView) bubbleView.findViewById(R.id.logo); //通过bubbleView得到相应的控件
-                if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION)
-                    logo.setImageResource(R.drawable.location_icon_purple);
-                else if (type == BLNotifier.TYPE_MANUAL_UPDATE_LOCATION)
-                    logo.setImageResource(R.drawable.location_icon_yellow);
-            }
-        });
+        private void parseLocation(String args, final int type) {
+            Log.d(DEBUG_TAG, "parseLocation type: " + type);
+            int positionX, positionY;
+            String[] tmp = args.split(",");
+            positionX =Integer.parseInt(tmp[1]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_X);
+            positionY = Integer.parseInt(tmp[2]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_Y);
+            mapid = Integer.parseInt(tmp[0]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_MAP_ID);
 
-        showPostion(positionX, positionY);
-    }
+            if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION) {
+                String messages = HttpUtil.parseJson(args, BLConstants.ARG_POSITION_MSG);
+                if (!messages.isEmpty())
+                    showNotification(messages);
+            }
+            Log.e("Map id =",String.valueOf(mapid));
+            Log.e("Cur_Map id =",String.valueOf(current_map));
+            if (mapid != current_map )//&& mapid != 0)
+            {
+                current_map = mapid;
+                Bitmap findmap = dbHelper.queryMap(mapid);
+                if(findmap == null)
+                {
+                    Log.e("Geting Map Info",mapid+"");
+                    getMapInfo(mapid);
+                }
+                else
+                {
+                    Log.e(DEBUG_TAG, "Find map in local database.");
+                    scalesize = dbHelper.queryScalesize(mapid);
+                    map.setMapBitmap(findmap);
+                }
+            }
+            map.clearShapes();
+
+            View bubble = getLayoutInflater().inflate(R.layout.popup, null);
+            map.setBubbleView(bubble,new Bubble.RenderDelegate() {
+                @Override
+                public void onDisplay(Shape shape, View bubbleView) {
+                    ImageView logo = (ImageView) bubbleView.findViewById(R.id.logo); //通过bubbleView得到相应的控件
+                    if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION)
+                        logo.setImageResource(R.drawable.location_icon_purple);
+                    else if (type == BLNotifier.TYPE_MANUAL_UPDATE_LOCATION)
+                        logo.setImageResource(R.drawable.location_icon_yellow);
+                }
+            });
+            Log.e("Position Showing", positionX + " , " + positionY);
+            showPostion(positionX, positionY);
+        }
     
     public void onBLUpdate(int notificationType, String args) {
         /*switch (notificationType) {

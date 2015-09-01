@@ -39,6 +39,7 @@ public class Communications {
     public static final String TAG_DOWNLOAD_MAP = "Download Map";
     public static final String TAG_SINGLE_TRACK = "Single Track";
     public static final String TAG_BATCH_TRACK = "Batch Track";
+    public static final String TAG_TEST_CONNECT = "test_connect";
     
     private String mCookie;
     private Object mtag;
