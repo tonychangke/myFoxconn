@@ -70,22 +70,24 @@ public class BeaconScanner implements
     private int p;
     private int APNUM=10;
     WifiManager wm = null;
-
+    private SuperWiFi rss_scan =null;
+    Vector<String> RSSList = null;
     ////
     public BeaconScanner(Context context) {
         mContext = context;
        // wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        rss_scan=new SuperWiFi(context);
         mComm = new Communications(this);
         mComm.setOnResponseListener(this);
         mComm.setOnErrorResponseListener(this);
     }
 
-    public void start(String rss) {
+    public void start() {
         //checkScanner();
 
 
         this.mScanning=false;
-        scanLeDevice(rss);
+        scanLeDevice();
 //        if (!App.getCookie().isEmpty())
 //            mLogin = true;
 //
@@ -106,7 +108,7 @@ public class BeaconScanner implements
         Log.d(DEBUG_TAG, "stop Beacon scanner");
         if (mScanning) {
             RequestManager.cancelAll(this);
-            scanLeDevice("-");
+            scanLeDevice();
         } else {
             Log.d(DEBUG_TAG, "Scanner is not running");
         }
@@ -129,20 +131,46 @@ public class BeaconScanner implements
 //        }
 //    }
 
-    private void scanLeDevice(String rss) {
-        if (rss!="-" && !mScanning) {
-            mScanning = true;
-            current_timer = System.currentTimeMillis();          ;
-            Map<String, String> track_map = new HashMap<String, String>();
-            track_map.put("rss", rss);
-            mComm.doVolleyPost(BLConstants.API_TEST5, track_map, Communications.TAG_SINGLE_TRACK);
-        } else {
-            mScanning = false;
-            // mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            Log.d(DEBUG_TAG, "stop scanning");
-        }
-    }
+//    private void scanLeDevice(String rss) {
+//        if (rss!="-" && !mScanning) {
+//            mScanning = true;
+//            current_timer = System.currentTimeMillis();
+//            Map<String, String> track_map = new HashMap<String, String>();
+//            track_map.put("rss", rss);
+//            mComm.doVolleyPost(BLConstants.API_TEST5, track_map, Communications.TAG_SINGLE_TRACK);
+//        } else {
+//            mScanning = false;
+//            // mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//            Log.d(DEBUG_TAG, "stop scanning");
+//        }
+//    }
+private void scanLeDevice() {
+    if ( !mScanning) {
+        mScanning = true;
+        current_timer = System.currentTimeMillis();
+        Map<String, String> track_map = new HashMap<String, String>();
 
+        rss_scan.set_para(10, 10);
+
+        rss_scan.ScanRss();
+        while(rss_scan.isscan()){
+            //Log.i("wifi","?!");
+        }
+        RSSList=rss_scan.getRSSlist();
+
+
+        //Log.i("wifi", RSSList.toString());
+        track_map.put("rss", RSSList.toString());
+        mComm.doVolleyPost(BLConstants.API_TEST5, track_map, Communications.TAG_SINGLE_TRACK);
+        mComm.doVolleyPost("http://192.168.1.103:80/", track_map, Communications.TAG_SINGLE_TRACK);
+
+
+    } else {
+        mScanning = false;
+        // mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        Log.d(DEBUG_TAG, "stop scanning");
+    }
+}
 
 
 

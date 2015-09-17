@@ -45,16 +45,16 @@ public class BeaconService extends Service {
         Log.d(DEBUG_TAG, "start a scanner");
         // init a scanner
         mBeaconScanner = new BeaconScanner(appContext);
-        mBeaconScanner.start("0,0,0");
+        mBeaconScanner.start();
     }
 
     public void stopScanner() {
         stopScan();
     }
 
-    public void startScan(String rss) {
+    public void startScan() {
         if (mBeaconScanner != null) {
-            mBeaconScanner.start(rss);
+            mBeaconScanner.start();
         }
     }
 
@@ -107,7 +107,7 @@ public class BeaconService extends Service {
         };
         registerReceiver(mConnReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-        startScanner();
+       // startScanner();
     }
 
     @Override
