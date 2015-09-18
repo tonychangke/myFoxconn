@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import com.cogent.DataBase.DBUser.Contact;
 import com.cogent.DataBase.DBUser.Map;
@@ -196,9 +195,6 @@ public class DBHelper {
 			else if (table.equalsIgnoreCase("map_table")) 
 				cursor = db.query(MAP_TABLE_NAME, null, null, null, null,
 						null, null);
-            else if (table.equalsIgnoreCase("map_all"))
-                cursor = db.query(MAP_TABLE_NAME,null,null,null,null,
-                        null,null);
 			else 				
 				cursor = db.query(POS_TABLE_NAME, null, null, null, null,
 					null, null);
@@ -215,10 +211,7 @@ public class DBHelper {
 					else if (table.equalsIgnoreCase("map_table"))
 						infos[i] = cursor.getString(cursor
 								.getColumnIndex(Map.MAPVERSION));
-                    else if (table.equalsIgnoreCase("map_all"))
-                        infos[i] = cursor.getString(cursor
-                                .getColumnIndex(Map.MAPID));
-					else
+					else 
 						infos[i] = cursor.getString(cursor
 								.getColumnIndex(Position.MAPVERSION));
 					cursor.moveToNext();
@@ -272,7 +265,7 @@ public class DBHelper {
 	}
 	public float queryScalesize(int mapId){
 		String sql = "select * from " + MAP_TABLE_NAME + " where " 
-				+ Map.MAPID + " = '" + mapId + "';";
+				+ Map.MAPID + " = '" + mapId + "'";;
 		
 		Cursor cursor = db.rawQuery(sql, null);
 				float scalesize = 1;
@@ -294,7 +287,7 @@ public class DBHelper {
 		}
 		else
 			return null;
-		return BitmapFactory.decodeByteArray(data, 0, data.length); 
+		return BitmapFactory.decodeByteArray(data, 0, data.length);
 	}
 
 	/*public String[] queryMapVersion() {
@@ -318,7 +311,7 @@ public class DBHelper {
 	}*/
 
 	/*地图位置信息表相关方法*/
-	public long insertOrUpdate( String mapId, String mapVersion, String mac, int x_coord, int y_coord,String rss) {
+	public long insertOrUpdate( String mapId, String mapVersion, String mac, int x_coord, int y_coord) {
 		boolean isUpdate = false;
 		String[] mapVersions = queryUserOrMapInfo(POS_TABLE_NAME);
 		for (int i = 0; i < mapVersions.length; i++) {
@@ -338,7 +331,6 @@ public class DBHelper {
 				values.put(Position.Mac, mac);
 				values.put(Position.X_COORD, x_coord);
 				values.put(Position.Y_COORD, y_coord);
-                values.put("rss",rss);
 				id = db.insert(POS_TABLE_NAME, null, values);
 			}
 		}
@@ -356,20 +348,10 @@ public class DBHelper {
 				+ mapVersion + "'", null);
 		return id;
 	}
-    public boolean ifRssExist(String rss){
-        String sql = "select "+Position.X_COORD +"," + Position.Y_COORD
-                + " from " + POS_TABLE_NAME + " where "
-                + "rss=" + rss;
-        Cursor cursor = db.rawQuery(sql,null);
-        if (cursor.getCount()!=0)
-            return true;
-        else
-            return false;
-    }
 
 	public int[] queryCoords(String mapId, String mapVersion, String mac) {
 		String sql = "select * from " + POS_TABLE_NAME + " where " 
-				+ Position.Mac + " = '" + mac + "';";
+				+ Position.Mac + " = '" + mac + "'";;
 		Cursor cursor = db.rawQuery(sql, null);
 		System.out.println(cursor);
 		int[] data = new int[2];;
@@ -414,7 +396,7 @@ public class DBHelper {
 					+ Map.MAPVERSION + " text," + Map.SCALESIZE + " float," + Map.MAP + " BLOB)");
 			//创建地图中位置信息表
 			db.execSQL("create table " + POS_TABLE_NAME + " (" + Position._ID 
-					+ " integer primary key," + Position.MAPID + " text," + "rss" +  "text,"
+					+ " integer primary key," + Position.MAPID + " text," 
 					+ Position.MAPVERSION + " text," + Position.Mac + " text," 
 					+ Position.X_COORD + " integer," + Position.Y_COORD + " integer)");
 			//创建联系人信息表
