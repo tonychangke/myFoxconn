@@ -34,7 +34,6 @@ public class HighlightImageView extends TouchImageView implements ShapeExtension
 
     @Override
 	public void addShape(Shape shape){
-
 		shapesCache.put(shape.tag, shape);
 		postInvalidate();
 	}
