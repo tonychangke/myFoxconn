@@ -18,7 +18,6 @@ public class Bubble extends FrameLayout{
 
     public final View view;
     public final PointF position = new PointF();
-
     private RenderDelegate renderDelegate;
 
     public Bubble(View view){
@@ -43,7 +42,7 @@ public class Bubble extends FrameLayout{
      * @param renderDelegate 渲染代理接口
      */
     public void setRenderDelegate (RenderDelegate renderDelegate) {
-        this.renderDelegate = renderDelegate;
+        this.renderDelegate =  renderDelegate;
     }
 
     /**
