@@ -103,8 +103,8 @@ public class StepCalculater implements Runnable, SensorEventListener {
 			if(stepcalculate){
 				if(instep){
 					if(highY<0){
-						spacecounter=spacecounter+1;
-						if(spacecounter>20){
+						spacecounter=spacecounter+1; //What does spacecounter mean?
+						if(spacecounter>5){
 							instep=false;
 							if(mycom.x>0 && mycom.x<45 || mycom.x<360 && mycom.x>315)
 							{
