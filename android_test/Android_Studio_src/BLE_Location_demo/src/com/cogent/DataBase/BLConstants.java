@@ -58,11 +58,11 @@ public interface BLConstants {
     public static final String ARG_MAP_URL = "mapurl";
     public static final String ARG_LOCAL_TIME = "localtime";
     public static final String ARG_DEV_MAC = "devicemac";
-
+    
     public static final String ARG_REQ_RESULT = "result";
     public static final String ARG_ERROR_CODE = "error_code";
-
-
+    
+    
     // messages
     public static final String MSG_PASS = "pass";
     public static final String MSG_FAIL_DESC = " fail, ";

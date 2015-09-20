@@ -32,28 +32,14 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	private DBHelper dbHelper;
 	private String username = "";
 	private String password = "";
-	public StepCalculater StepCal;
-	//final Button showstep = (Button)findViewById(R.id.showstep);
-//
-//
-//	final EditText ipText = (EditText)findViewById(R.id.editText);
-//	final EditText ipText2 = (EditText)findViewById(R.id.editText2);
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-//		StepCal=new StepCalculater(this);
-//		StepCal.startstep();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
-		//StepCal.stepcounter
-		//username_edit.setText(String.valueOf(100));
-//		showstep.setOnClickListener(new Button.OnClickListener() {
-//			public void onClick(View v) {
-//
-//				//ipText2.setText(String.valueOf(StepCal.mycom.x));
-//			}
-//		});
+        
 		initView();
 	}
     
@@ -96,7 +82,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
             }
 		}
 	}
-
+	
 	@Override
 	public void onClick(View v) {
 		final Intent intent_register;
