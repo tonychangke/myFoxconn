@@ -65,7 +65,7 @@ public abstract class Shape {
      */
     public final void onScale(float scale,float centerX,float centerY){
         scaleBy(scale, centerX, centerY);
-        if(displayBubble != null){
+        if(displayBubble != null && displayBubble.flag){
             displayBubble.showAtShape(this);
         }
     }
@@ -79,7 +79,7 @@ public abstract class Shape {
      */
     public final void onTranslate(float deltaX,float deltaY){
 		translate(deltaX,deltaY);
-        if(displayBubble != null){
+        if(displayBubble != null && displayBubble.flag){
             displayBubble.showAtShape(this);
         }
     }
@@ -89,8 +89,9 @@ public abstract class Shape {
      */
     public final void onDraw(Canvas canvas){
         draw(canvas);
+
         // 濡傛灉褰撳墠Shape涓嶣ubble鏈夊叧鑱旓紝鍒欏皢Bubble涔熸樉绀哄嚭鏉�       
-        if(displayBubble != null){
+        if(displayBubble != null && displayBubble.flag){
 			displayBubble.showAtShape(this);
         }
     }

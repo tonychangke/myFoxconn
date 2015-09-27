@@ -2,6 +2,7 @@ package net.yoojia.imagemap.core;
 
 import android.graphics.PointF;
 import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ public class Bubble extends FrameLayout{
     public final View view;
     public final PointF position = new PointF();
     private RenderDelegate renderDelegate;
+    public boolean flag = false;
 
     public Bubble(View view){
 		super(view.getContext());
@@ -56,35 +58,40 @@ public class Bubble extends FrameLayout{
         if (renderDelegate != null){
             renderDelegate.onDisplay(shape, view);
         }
+
         view.setVisibility(View.VISIBLE);
     }
 
     private void setBubbleViewAtPosition(PointF center){
-        float posX = center.x - view.getWidth()/2;
-        float posY = center.y - view.getHeight(); //If comment this then the bubble is on pos with offset
-		setBubbleViewAtPosition(posX, posY); //If comment this sentence then no jump.
+//        float posX = center.x - view.getWidth()/2;
+//        float posY = center.y - view.getHeight();
+        float posX = center.x;
+        float posY = center.y;
+
+        //Log.e("GetSize",view.getWidth()/2+","+view.getHeight());
+		setBubbleViewAtPosition(posX, posY);
     }
 
     private void setBubbleViewAtPosition(float x, float y){
 
 		// BUG : HTC SDK 2.3.3 界面会被不停的重绘,这个重绘请求是View.onDraw()方法发起的。
-		if(position.equals(x,y)) return;
-
+	    if(position.equals(x,y))
+            return;
         position.set(x,y);
 
 		//if(IS_API_11_LATER){
          //   view.setX(x);
           //  view.setY(y);
-       // }else{
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-			int left = (int)x;
-			int top = (int)y;
-			// HTC SDK 2.3.3 Required
-			params.gravity = Gravity.CENTER_VERTICAL | Gravity.TOP;
-			params.leftMargin = left;
-			params.topMargin = top;
-			view.setLayoutParams(params);
-        //}
+        // }else{
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        int left = (int)x;
+        int top = (int)y;
+        // HTC SDK 2.3.3 Required
+        params.gravity = Gravity.CENTER_VERTICAL | Gravity.TOP;
+        params.leftMargin = left - 27;
+        params.topMargin = top - 85;
+        view.setLayoutParams(params);
+        flag = true;
     }
 
 }
