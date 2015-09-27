@@ -46,11 +46,15 @@ public class StepCalculater implements Runnable, SensorEventListener {
          * 参数3 ：模式 可选数据变化的刷新频率
          * */
         //  注册加速度传感器
+
+        Log.e("abc","2");
         sm.registerListener(this, 
         		sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
         		SensorManager.SENSOR_DELAY_FASTEST);//.SENSOR_DELAY_NORMAL);
 
+        Log.e("abc","3");
 		mycom=new MyCompass(context);
+        Log.e("abc","4");
         stepcalculate=false;
         stepcounter=0;
         spacecounter=0;

@@ -1,6 +1,7 @@
 package com.cogent.QQ;
 
 import com.android.volley.VolleyError;
+import com.cogent.DataBase.DBUser;
 import com.cogent.util.ContactUtils;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -9,9 +10,13 @@ import java.util.Map;
 import net.yoojia.imagemap.ImageMap;
 import net.yoojia.imagemap.core.Bubble;
 import net.yoojia.imagemap.core.CircleShape;
+import net.yoojia.imagemap.core.Lines;
 import net.yoojia.imagemap.core.Shape;
+import net.yoojia.imagemap.core.ThickLines;
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -29,13 +34,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.graphics.drawable.Drawable;
 
-import com.cogent.BLE.BleWrapper;
-import com.cogent.BLE.BleWrapperUiCallbacks;
-import com.cogent.BLE.DeviceListAdapter;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import java.util.ArrayList;
-import android.content.Intent;
 
 import com.cogent.Communications.Communications;
 import com.cogent.DataBase.BLConstants;
@@ -52,25 +50,38 @@ import com.hp.hpl.sparta.xpath.Step;
 
 import javax.sql.CommonDataSource;
 
+import com.cogent.BLE.BleWrapper;
+import com.cogent.BLE.BleWrapperUiCallbacks;
+import com.cogent.BLE.DeviceListAdapter;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import java.util.ArrayList;
+import android.content.Intent;
+
+
+import static android.os.SystemClock.sleep;
+
 public class LocationActivity extends BaseActivity implements BLIObserver {
     private static final String DEBUG_TAG = "LocationActivity";
     protected static BeaconService mBoundService = null;
     private ImageMap map;
     private Boolean isOnline = true;
-    ViewTabber tabbar;
+	ViewTabber tabbar;
     public Handler mHandler;
 
     private StepCalculater StepCal;
-    private ImageView ivDeleteText;
-    private EditText etSearch;
-    private Button btn_search;
+	private ImageView ivDeleteText;
+	private EditText etSearch;
+	private Button btn_search;
     private DBHelper dbHelper;
     private CircleShape[] black;
+    private Lines[] lines;
+    private int lines_count = 0;
     private int black_count = 0;
 
     float scalesize = 1;
-    private int current_map = -1;
-    private int mapid = 0;
+	private int current_map = -1;
+	private int mapid = 0;
     private int cur_x = 0;
     private int cur_y = 0;
     private String cur_rss="0,0,0";
@@ -83,6 +94,8 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private ArrayList<BluetoothDevice> mDevices;
     private ArrayList<byte[]> mRecords;
     private ArrayList<Integer> mRSSIs;
+
+
 
     private void bleMissing() {
         Toast.makeText(this, "BLE Hardware is required but not available!", Toast.LENGTH_LONG).show();
@@ -114,18 +127,15 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         });
     }
 
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "onCreate");
         mBoundService = WelcomeActivity.getBoundService();
+        Log.e("abc","1");
         StepCal = new StepCalculater(this);
         StepCal.stopstep();
-
-
-
-        /* start BLE scan */
+         /* start BLE scan */
         if (TestControl.GetBLEEnableFlag()) {
 
             mBleWrapper = new BleWrapper(this, new BleWrapperUiCallbacks.Null() {
@@ -140,16 +150,15 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 bleMissing();
             }
         }
-
-
+        Log.e("abc","5");
         WelcomeActivity.registerObserver(this);
-        setContentView(R.layout.tab_view);
-        ContactUtils.init(this);
-        tabbar = new ViewTabber(this);
-        dbHelper = new DBHelper(this);
+		setContentView(R.layout.tab_view);
+		ContactUtils.init(this);
+		tabbar = new ViewTabber(this);
+		dbHelper = new DBHelper(this);
 
         map = (ImageMap) findViewById(R.id.imagemap);
-        initView();
+		initView();
 
         mHandler=new Handler()
         {
@@ -160,9 +169,9 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                     case 1:
                         Log.e("asbx",""+cnt);
                         String[] tmp = new String[3];
-                        tmp[0] = "0,500,"+cnt+"00";
-                        tmp[1] = "0,300,"+cnt+"00";
-                        tmp[2] = "0,100,"+cnt+"00";
+                        tmp[0] = "0,500,"+cnt+"00"+",1";
+                        tmp[1] = "0,300,"+cnt+"00"+",2";
+                        tmp[2] = "0,100,"+cnt+"00"+",2";
                         parseLocation(tmp, 2);
                         cnt = (cnt + 1) % 10;
                         break;
@@ -177,11 +186,11 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
             @Override
             public void run()
             {
-                int i = 14;
+                int i = 4;
                 Looper.prepare();
 
                 while (i-- != 0) {
-                    SystemClock.sleep(1000);
+                    sleep(1000);
                     Message message=new Message();
                     message.what=1;
                     mHandler.sendMessage(message);
@@ -233,18 +242,18 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         WelcomeActivity.unregisterObserver(this);
     }
 
-    public void initView() {
-        ivDeleteText = (ImageView) findViewById(R.id.ivDeleteText);
+	public void initView() {
+		ivDeleteText = (ImageView) findViewById(R.id.ivDeleteText);
         //btn_search = (ImageView) findViewById(R.id.btnSearch);
-        btn_search = (Button) findViewById(R.id.btnSearch);
+		btn_search = (Button) findViewById(R.id.btnSearch);
         etSearch = (EditText) findViewById(R.id.etSearch);
 
         ivDeleteText.setOnClickListener(new OnClickListener() {
-
-            public void onClick(View v) {
-                etSearch.setText("");
-            }
-        });
+			
+			public void onClick(View v) {
+				etSearch.setText("");
+			}
+		});
 
         etSearch.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -275,7 +284,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
         dbHelper.insertOrUpdate(mapid, mapid, "", scalesize, os.toByteArray());
         map.setMapBitmap(resizedBmp);
-
+        lines = new Lines[100];
         black = new CircleShape[100];
 //
 //        Log.e("Step X Y", StepCal.get_step_offset_X() + "," + StepCal.get_step_offset_Y());
@@ -290,11 +299,12 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 //Log.e("Step Counter", StepCal.getsteps() + "");
                 //test
                 Log.e("Test 001",":"+etSearch.getText().toString().trim()+":");
+
                 if(etSearch.getText().toString().trim()!=null) {
                     String[] tmp = new String[3];
-                    tmp[0] = "0,500,"+etSearch.getText().toString().trim()+"00";
-                    tmp[1] = "0,300,"+etSearch.getText().toString().trim()+"00";
-                    tmp[2] = "0,100,"+etSearch.getText().toString().trim()+"00";
+                    tmp[0] = "0,500,"+etSearch.getText().toString().trim()+"00"+",1";
+                    tmp[1] = "0,300,"+etSearch.getText().toString().trim()+"00"+",2";
+                    tmp[2] = "0,100,"+etSearch.getText().toString().trim()+"00"+",2";
                     parseLocation(tmp, 2);
                 }
                 else{
@@ -321,15 +331,15 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 }
             }
         });
-    }
-
-    public void goBack(View view) {
-        //onBackPressed();
-        //tabbar.switchViewTab(0);
-        tabbar.viewContainer.flipToView(0);
-        tabbar.setViewTab(0);
-    }
-
+	}
+	
+	public void goBack(View view) {
+		//onBackPressed();
+		//tabbar.switchViewTab(0);
+		tabbar.viewContainer.flipToView(0);
+		tabbar.setViewTab(0);
+	}
+    
     class bledevice {
         String devicemac = "";
         int rec_rssi = 0;
@@ -372,7 +382,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 cur_x = Integer.parseInt(response.split(",")[1]);
                 cur_y = Integer.parseInt(response.split(",")[2]);
                 String[] tmp =  new String[1];
-                tmp[0] =response;
+                tmp[0] =response+",1";
                 parseLocation(tmp, BLNotifier.TYPE_MANUAL_UPDATE_LOCATION);
             }
             /*
@@ -421,7 +431,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         }
 
     }
-
+    
     public void getMapInfo(final int mapid)
     {
         Log.d(DEBUG_TAG, "Query map by map ID: " + mapid);
@@ -430,42 +440,76 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         //query_map.put("mapid", mapid+"");
         mComm.doVolleyPost(BLConstants.API_QUERY_MAP_BY_MAPID, query_map, Communications.TAG_QUERY_MAP);
     }
-
+    
     public void downloadMap(final String mapurl){
         Log.d(DEBUG_TAG, "Download map with url: ." + mapurl);
         mComm.doVolleyImageRequest(mapurl, Communications.TAG_DOWNLOAD_MAP);
     }
 
-    public boolean showPostion(double x, double y){ //该方法可以实现一个圆点，用于和bubble进行绑定，并且最终显示在地图上
-        black[black_count] = new CircleShape("No"+black_count, Color.BLACK); //Color.BLUE，圆点的颜色
+    public void addLine(float sx, float sy, float ex, float ey) {
+        lines[lines_count] = new Lines("Lines"+lines_count, 0xFFFF3E96); //Color.BLUE，圆点的颜色
+        lines[lines_count].setValues(String.format("%.5f,%.5f,%.5f,%.5f,%.5f",sx*scalesize, sy*scalesize, ex*scalesize, ey*scalesize, 10.0)); //设置圆点的位置和大小
+        map.addShape(lines[lines_count]); //加到地图上
+        lines_count = (lines_count + 1) % 100;
+    }
 
-        black[black_count].setValues(String.format("%.5f,%.5f,15",x*scalesize,y*scalesize)); //设置圆点的位置和大小
-        map.addShapeAndRefToBubble(black[black_count]); //加到地图上
+    public void addLines(PointF[] points) {  //  0xFFFF3E96 挺好看的
+        int i;
+        float t = (float)6.5;
+        addCircle(points[0].x, points[0].y, t, 0xFFFF3E96, "turning_point");
+        for (i = 0; i<points.length - 1; i++) {
+            addLine(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+            addCircle(points[i+1].x, points[i+1].y, t, 0xFFFF3E96, "turning_point");
+        }
+    }
+//    public void addLine(double sx, double sy, double ex, double ey) {
+//        lines[lines_count] = new ThickLines("Lines"+black_count, Color.BLUE); //Color.BLUE，圆点的颜色
+//        lines[lines_count].setValues(String.format("%.5f,%.5f,%.5f,%.5f",sx*scalesize, sy*scalesize, ex*scalesize, ey*scalesize)); //设置圆点的位置和大小
+//        map.addShape(lines[lines_count]); //加到地图上
+//        lines_count = (lines_count + 1) % 100;
+//    }
+
+    public void addCircle(float x, float y, float rad, int color, String tag ){
+        black[black_count] = new CircleShape(tag+black_count, color); //Color.BLUE，圆点的颜色
+        if (tag == "position") {
+            black[black_count].setValues(String.format("%.5f,%.5f,%.5f,%d", x * scalesize, y * scalesize, rad * scalesize, 100)); //设置圆点的位置和大小
+            map.addShapeAndRefToBubble(black[black_count]); //加到地图上
+        }
+        else {
+            black[black_count].setValues(String.format("%.5f,%.5f,%.5f,%d", x * scalesize, y * scalesize, rad * scalesize, 255)); //设置圆点的位置和大小
+            map.addShape(black[black_count]);
+        }
         black_count = (black_count + 1) % 100;
+    }
+
+    public boolean showPostion(double x, double y){ //该方法可以实现一个圆点，用于和bubble进行绑定，并且最终显示在地图上
+        addCircle((float)x , (float)y, (float)15, Color.BLACK, "position");
         return true;
     }
 
+    //参数arg string中格式为 "mapid,x,y,用户类型"  用户类型1表示本人，2表示其他人
     private void parseLocation(String[] args, final int type) {
-        int positionX[],positionY[],i;
+        int positionX[], positionY[], i, Usertype[];
         String[] tmp;
         Log.d(DEBUG_TAG, "parseLocation type: " + type);
         positionX = new int[args.length];
         positionY = new int[args.length];
+        Usertype = new int[args.length];
         tmp = args[0].split(",");
         mapid = Integer.parseInt(tmp[0]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_MAP_ID);
         for (i = 0;i<args.length;i++) {
             tmp = args[i].split(",");
             positionX[i] = Integer.parseInt(tmp[1]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_X);
             positionY[i] = Integer.parseInt(tmp[2]);//HttpUtil.parseJsonsdouble(args,BLConstants.ARG_POSITION,BLConstants.ARG_POSITION_Y);
-
+            Usertype[i] = Integer.parseInt(tmp[3]);
         }
-            /*
-            if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION) {
-                String messages = HttpUtil.parseJson(args[0], BLConstants.ARG_POSITION_MSG);
-                if (!messages.isEmpty())
-                    showNotification(messages);
-            }
-            */
+        /*
+        if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION) {
+            String messages = HttpUtil.parseJson(args[0], BLConstants.ARG_POSITION_MSG);
+            if (!messages.isEmpty())
+                showNotification(messages);
+        }
+        */
         Log.e("Map id =",String.valueOf(mapid));
         Log.e("Cur_Map id =",String.valueOf(current_map));
         if (mapid != current_map )//&& mapid != 0)
@@ -487,42 +531,54 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         map.clearShapes();
 
         for(i = 0;i <args.length;i++) {
-                /*
-                if (i == args.length) {
+            /*
+            if (i == args.length) {
 
-                    View bubble = getLayoutInflater().inflate(R.layout.popup, null);
-                    map.setBubbleView(bubble,new Bubble.RenderDelegate() {
-                        @Override
-                        public void onDisplay(Shape shape, View bubbleView) {
-                            ImageView logo = (ImageView) bubbleView.findViewById(R.id.logo); //通过bubbleView得到相应的控件
-                            if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION)
-                                logo.setImageResource(R.drawable.location_icon_purple);
-                            else if (type == BLNotifier.TYPE_MANUAL_UPDATE_LOCATION)
-                                logo.setImageResource(R.drawable.location_icon_yellow);
-                        }
-                    });
-                    Log.e("Position Showing", 10000 + " , " + 10000);
-                    showPostion(700.0,700.0);
-                    break;
+                View bubble = getLayoutInflater().inflate(R.layout.popup, null);
+                map.setBubbleView(bubble,new Bubble.RenderDelegate() {
+                    @Override
+                    public void onDisplay(Shape shape, View bubbleView) {
+                        ImageView logo = (ImageView) bubbleView.findViewById(R.id.logo); //通过bubbleView得到相应的控件
+                        if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION)
+                            logo.setImageResource(R.drawable.location_icon_purple);
+                        else if (type == BLNotifier.TYPE_MANUAL_UPDATE_LOCATION)
+                            logo.setImageResource(R.drawable.location_icon_yellow);
+                    }
+                });
+                Log.e("Position Showing", 10000 + " , " + 10000);
+                showPostion(700.0,700.0);
+                break;
 
-                }
-                */
+            }
+            */
+
+            //内部类型应用需要final变量，不可修改
+            final int k = Usertype[i];
+
             View bubble = getLayoutInflater().inflate(R.layout.popup, null);
             map.setBubbleView(bubble,new Bubble.RenderDelegate() {
-                @Override
-                public void onDisplay(Shape shape, View bubbleView) {
-                    ImageView logo = (ImageView) bubbleView.findViewById(R.id.logo); //通过bubbleView得到相应的控件
-                    if (type == BLNotifier.TYPE_AUTO_UPDATE_LOCATION)
-                        logo.setImageResource(R.drawable.location_icon_purple);
-                    else if (type == BLNotifier.TYPE_MANUAL_UPDATE_LOCATION)
-                        logo.setImageResource(R.drawable.location_icon_yellow);
+            @Override
+            public void onDisplay(Shape shape, View bubbleView) {
+            ImageView logo = (ImageView) bubbleView.findViewById(R.id.logo); //通过bubbleView得到相应的控件
+            if (k == BLNotifier.TYPE_SELF)
+                logo.setImageResource(R.drawable.location_icon_purple);
+            else if (k == BLNotifier.TYPE_OTHERS)
+                logo.setImageResource(R.drawable.location_icon_yellow);
                 }
             });
             Log.e("Position Showing", positionX[i] + " , " + positionY[i]);
+
+            PointF[] tmpp = new PointF[5];
+            tmpp[0] = new PointF((float)100.0,(float)100.0);
+            tmpp[1] = new PointF((float)200.0,(float)200.0);
+            tmpp[2] = new PointF((float)200.0,(float)800.0);
+            tmpp[3] = new PointF((float)500.0,(float)800.0);
+            tmpp[4] = new PointF((float)500.0,(float)300.0);
+            addLines(tmpp);
             showPostion(positionX[i], positionY[i]);
         }
     }
-
+    
     public void onBLUpdate(int notificationType, String args) {
         /*switch (notificationType) {
             case BLNotifier.TYPE_BLE_NOT_SUPPORT:

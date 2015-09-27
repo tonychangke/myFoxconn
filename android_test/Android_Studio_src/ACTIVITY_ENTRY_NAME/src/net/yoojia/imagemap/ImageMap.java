@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -11,6 +12,8 @@ import net.yoojia.imagemap.core.Bubble;
 import net.yoojia.imagemap.core.Shape;
 import net.yoojia.imagemap.core.ShapeExtension;
 import net.yoojia.imagemap.support.TranslateAnimation;
+
+import static android.os.SystemClock.sleep;
 
 
 /**
@@ -26,7 +29,6 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
     private Bubble[] bubble;
     private int bubble_count;
 	private View viewForAnimation;
-    private int view_count;
 
     public ImageMap(Context context) {
         this(context,null);
@@ -53,7 +55,6 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
         //test
         bubble  = new Bubble[100];
         bubble_count = 0;
-        view_count = 0;
     }
 
     /**
@@ -80,8 +81,8 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
     public void addShapeAndRefToBubble(final Shape shape){
         addShape(shape);
         if(bubble_count != 0){
-			shape.createBubbleRelation(bubble[(bubble_count-1)%100]);
-			bubble[(bubble_count-1)%100].showAtShape(shape);
+            shape.createBubbleRelation(bubble[(bubble_count-1)%100]);
+            bubble[(bubble_count-1)%100].showAtShape(shape);
         }
     }
 
@@ -100,8 +101,7 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
 		// Move the center point of the image to the target shape center.
 		PointF from = highlightImageView.getAbsoluteCenter();
 		PointF to = shape.getCenterPoint();
-		TranslateAnimation movingAnimation = new TranslateAnimation(from.x,to.x/4,from.y,to.y); //Why is 4?
-
+		TranslateAnimation movingAnimation = new TranslateAnimation(from.x,to.x/4,from.y,to.y);
 		movingAnimation.setOnAnimationListener(this);
 		movingAnimation.setInterpolator(new DecelerateInterpolator());
 		movingAnimation.setDuration(9000);
