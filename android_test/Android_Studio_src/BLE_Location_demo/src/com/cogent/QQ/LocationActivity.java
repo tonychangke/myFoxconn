@@ -50,6 +50,15 @@ import com.hp.hpl.sparta.xpath.Step;
 
 import javax.sql.CommonDataSource;
 
+import com.cogent.BLE.BleWrapper;
+import com.cogent.BLE.BleWrapperUiCallbacks;
+import com.cogent.BLE.DeviceListAdapter;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import java.util.ArrayList;
+import android.content.Intent;
+
+
 import static android.os.SystemClock.sleep;
 
 public class LocationActivity extends BaseActivity implements BLIObserver {
@@ -78,14 +87,70 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private String cur_rss="0,0,0";
     public int cnt = 0;
 
+    private static final int ENABLE_BT_REQUEST_ID = 1;
+    private BleWrapper mBleWrapper = null;
+    private boolean mScanning = false;
+    private DeviceListAdapter mDevicesListAdapter = null;
+    private ArrayList<BluetoothDevice> mDevices;
+    private ArrayList<byte[]> mRecords;
+    private ArrayList<Integer> mRSSIs;
 
-	@Override
+
+
+    private void bleMissing() {
+        Toast.makeText(this, "BLE Hardware is required but not available!", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    /* handle BLE scan */
+    private void handleFoundDevice(final BluetoothDevice device,
+                                   final int rssi,
+                                   final byte[] scanRecord)
+    {
+        // adding to the UI have to happen in UI thread
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mDevicesListAdapter.addDevice(device, rssi, scanRecord);
+                mDevices = mDevicesListAdapter.GetDevice();
+                mRSSIs = mDevicesListAdapter.GetRSSI();
+                mRecords = mDevicesListAdapter.GetRecord();
+
+                if (TestControl.GetBLEInfoFlag())
+                {
+                    for (int index = 0;index < mDevices.size();index++) {
+                        //Log.i("BLEDevice", mDevices.get(index).getName().toString());
+                        Log.i("BLERecord", mRSSIs.get(index).toString());
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "onCreate");
         mBoundService = WelcomeActivity.getBoundService();
+        Log.e("abc","1");
         StepCal = new StepCalculater(this);
         StepCal.stopstep();
+         /* start BLE scan */
+        if (TestControl.GetBLEEnableFlag()) {
+
+            mBleWrapper = new BleWrapper(this, new BleWrapperUiCallbacks.Null() {
+                @Override
+                public void uiDeviceFound(final BluetoothDevice device, final int rssi, final byte[] record) {
+                    handleFoundDevice(device, rssi, record);
+                }
+            });
+
+            // check if we have BT and BLE on board
+            if (mBleWrapper.checkBleHardwareAvailable() == false) {
+                bleMissing();
+            }
+        }
+        Log.e("abc","5");
         WelcomeActivity.registerObserver(this);
 		setContentView(R.layout.tab_view);
 		ContactUtils.init(this);
@@ -139,10 +204,29 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     public void onResume() {
         super.onResume();
         Log.d(DEBUG_TAG, "onResume");
+
+        if(mBleWrapper.isBtEnabled() == false) {
+            // BT is not turned on - ask user to make it enabled
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, ENABLE_BT_REQUEST_ID);
+            // see onActivityResult to check what is the status of our request
+        }
+
+        // initialize BleWrapper object
+        mBleWrapper.initialize();
+
+        mDevicesListAdapter = new DeviceListAdapter(this);
+        //setListAdapter(mDevicesListAdapter);
+
+        // Automatically start scanning for devices
+        mScanning = true;
+        // remember to add timeout for scanning to not run it forever and drain the battery
+        mBleWrapper.startScanning();
+
         if (mBoundService != null)
             mBoundService.startScan(cur_rss);
     }
-    
+
     @Override
     public void onPause() {
         super.onPause();
