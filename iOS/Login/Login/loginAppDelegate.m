@@ -8,11 +8,14 @@
 
 #import "loginAppDelegate.h"
 #import "IQKeyboardManager.h"
+#import "TTObject.h"
 
 @implementation loginAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    TTObject* obj = [[TTObject alloc] init];
+    [obj startTimer];
     // Override point for customization after application launch.
     
     //ONE LINE OF CODE.
