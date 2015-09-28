@@ -1,19 +1,13 @@
-//
-//  MapViewController.h
-//  Login
-//
-//  Created by 常柯 on 15/8/19.
-//  Copyright (c) 2015年 menuz's lab. All rights reserved.
-//
+//  CarImageViewController.h
+//  CarValet
 
 #import <UIKit/UIKit.h>
-#import "NAMapView.h"
 
 @interface MapViewController : UIViewController
-{
-    IBOutlet NAMapView *mapView;
+<UIScrollViewDelegate>
+@property (weak, nonatomic) IBOutlet UILabel *carNumberLabel;
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *resetZoomButton;
 
-}
-@property (retain, nonatomic) IBOutlet NAMapView *mapView;
-
+- (IBAction)resetZoom:(id)sender;
 @end

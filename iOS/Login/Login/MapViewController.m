@@ -1,51 +1,171 @@
 //
-//  MapViewController.m
-//  Login
-//
-//  Created by 常柯 on 15/8/19.
-//  Copyright (c) 2015年 menuz's lab. All rights reserved.
-//
+//  CarImageViewController.m
+//  CarValet
 
 #import "MapViewController.h"
 
-@interface MapViewController()<UIScrollViewAccessibilityDelegate>
 
-@end
+@implementation MapViewController {
+    NSArray *carImageNames;
+    UIImageView *image1;
+    UIImageView *image2;
+    NSInteger xx;
 
-@implementation MapViewController
-@synthesize mapView;
+    UIView *carImageContainerView;
+}
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
+
+#pragma mark - Utility Methods
+
+- (void)setupScrollContent {
+    if (carImageContainerView != nil) {
+        [carImageContainerView removeFromSuperview];
+    }
+    
+    CGFloat scrollWidth = self.view.bounds.size.width;
+    CGFloat totalWidth = scrollWidth * [carImageNames count];
+    
+    carImageContainerView = [[UIView alloc] initWithFrame:
+                             CGRectMake(0.0, 0.0,
+                                        totalWidth,
+                                        self.scrollView.frame.size.height)];
+    
+    CGFloat atX = 0.0;
+    CGFloat maxHeight = 0.0;
+    UIImage *carImage;
+    
+    for (NSString *atCarImageName in carImageNames) {
+        carImage = [UIImage imageNamed:atCarImageName];
+        
+        CGFloat scale = scrollWidth / carImage.size.width;
+        
+        UIImageView *atImageView = [[UIImageView alloc]
+                                    initWithImage:carImage];
+        
+        CGFloat newHeight = atImageView.bounds.size.height * scale;
+        
+        atImageView.frame = CGRectMake(atX, 0.0, scrollWidth, newHeight);
+        
+        if (newHeight > maxHeight) {
+            maxHeight = newHeight;
+        }
+        
+        atX += scrollWidth;
+        
+        [carImageContainerView addSubview:atImageView];
+    }
+    
+    CGRect newFrame = carImageContainerView.frame;
+    newFrame.size.height = maxHeight;
+    carImageContainerView.frame = newFrame;
+    
+    [self.scrollView addSubview:carImageContainerView];
+    self.scrollView.contentSize = carImageContainerView.bounds.size;
+    
+    //CGRect CGfour = CGRectMake(250, 260, 320, 200);//
+    //UIView *v_four = [[UIView alloc]initWithFrame:CGfour];//
+    //v_four.backgroundColor = [UIColor orangeColor];//
+    //[carImageContainerView addSubview:v_four];//
+}
+////////////
+-(void)showview{
+    [image1 removeFromSuperview];
+    xx=xx+10;
+    image1 = [[UIImageView alloc] initWithFrame:CGRectMake(xx,55, 20,20)];
+    image1.image=[UIImage imageNamed:@"self.png"];
+    [carImageContainerView addSubview:image1];
+    [image2 removeFromSuperview];
+    image2 = [[UIImageView alloc] initWithFrame:CGRectMake(80,60, 20,20)];
+    image2.image=[UIImage imageNamed:@"friend.png"];
+    [carImageContainerView addSubview:image2];
+    
+}
+////////////
+
+
+
+#pragma mark - View Lifecycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //mapView = [[NAMapView alloc]init];
-    //self.view=mapView.view;
-    mapView.delegate=self;
-    [mapView displayMap:[UIImage imageNamed:@"123.png"]];
     
-    NAAnnotation * place1 = [NAAnnotation annotationWithPoint:CGPointMake(543, 489)];
-    place1.title = @"place1";
-    place1.subtitle = @"subtitle";
-    [mapView addAnnotation:place1 animated:NO];
+    self.resetZoomButton.enabled = NO;
     
-    NAAnnotation * place2 = [NAAnnotation annotationWithPoint:CGPointMake(63, 379)];
-    place2.title = @"place2";
+    carImageNames = @[ @"p2.jpg",@"p3.jpg",@"p4.jpg"];
     
-    place2.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-    
-    [mapView addAnnotation:place2 animated:YES];
-    
-    NAAnnotation * place3 = [NAAnnotation annotationWithPoint:CGPointMake(679, 302)];
-    place3.title = @"place3";
-    [mapView addAnnotation:place3 animated:NO];
+    [self setupScrollContent];
+    ///////
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(showview) name:@"showView" object:nil];
+    ///////
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self updateCarNumberLabel];
 }
 
-- (void)dealloc {
-    [super dealloc];
+
+
+#pragma mark - Rotation
+
+- (void)willAnimateRotationToInterfaceOrientation:
+(UIInterfaceOrientation)toInterfaceOrientation
+                                         duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation
+                                            duration:duration];
+    
+    [self setupScrollContent];
 }
 
+
+
+#pragma mark - UIScrollViewDelegate
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    return carImageContainerView;
+}
+
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView
+                       withView:(UIView *)view
+                        atScale:(float)scale {
+    
+    self.resetZoomButton.enabled = scale != 1.0;
+}
+
+
+- (void) updateCarNumberLabel {
+    NSInteger carIndex = [self carIndexForPoint:self.scrollView.contentOffset];
+    
+    NSString *newText = [NSString stringWithFormat:@"Car Number: %d",
+                         carIndex + 1];
+    
+    self.carNumberLabel.text = newText;
+}
+
+
+- (NSInteger)carIndexForPoint:(CGPoint)thePoint {
+    CGFloat pageWidth = self.scrollView.frame.size.width;
+    
+    pageWidth *= self.scrollView.zoomScale;
+    
+    return (NSInteger)(thePoint.x / pageWidth);
+}
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self updateCarNumberLabel];
+}
+
+
+
+#pragma mark - Actions
+
+- (IBAction)resetZoom:(id)sender
+{
+    [self.scrollView setZoomScale:1.0 animated:YES];
+}
 @end

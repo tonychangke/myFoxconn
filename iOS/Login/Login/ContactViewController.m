@@ -9,10 +9,11 @@
 #import "ContactViewController.h"
 #import "NTContact.h"
 #import "NTContactGroup.h"
+#import "CustomIOSAlertView.h"
 
 #define kContactToolbarHeight 64
 
-@interface ContactViewController ()<UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate>
+@interface ContactViewController ()<UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate,CustomIOSAlertViewDelegate>
 {
 
     UITableView * _tableView;
@@ -123,33 +124,33 @@
     
     //由于此方法调用十分频繁，cell的标示声明成静态变量有利于性能优化
     static NSString *cellIdentifier=@"UITableViewCellIdentifierKey1";
-    static NSString *cellIdentifierForFirstRow=@"UITableViewCellIdentifierKeyWithSwitch";
+//    static NSString *cellIdentifierForFirstRow=@"UITableViewCellIdentifierKeyWithSwitch";
     
     UITableViewCell * cell;
     
-    if (indexPath.row == 0) {
-        cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifierForFirstRow];
-    }else{
+//    if (indexPath.row == 0) {
+//        cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifierForFirstRow];
+//    }else{
     
         cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    }
+//    }
     
     if (!cell) {
-        if (indexPath.row == 0) {
-            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifierForFirstRow];
-            UISwitch * sw = [[UISwitch alloc]init];
-            [sw addTarget:self action:@selector(switchValueChange:) forControlEvents:UIControlEventValueChanged];
-            cell.accessoryView = sw;
-        }else{
+//        if (indexPath.row == 0) {
+//            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifierForFirstRow];
+//            UISwitch * sw = [[UISwitch alloc]init];
+//            [sw addTarget:self action:@selector(switchValueChange:) forControlEvents:UIControlEventValueChanged];
+//            cell.accessoryView = sw;
+//        }else{
         
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
             cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         
-        }
+//        }
     }
-    if (indexPath.row == 0) {
-        cell.accessoryView.tag = indexPath.section;
-    }
+//    if (indexPath.row == 0) {
+//        cell.accessoryView.tag = indexPath.section;
+//    }
     NTContactGroup * group = _contacts[indexPath.section];
     NTContact * contact = group.contacts[indexPath.row];
     cell.textLabel.text = [contact getName];
@@ -219,8 +220,9 @@
 #pragma mark 尾部详情
 -(NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
 
-    NTContactGroup * group = _contacts[section];
-    return group.groupDetail;
+    return @"";
+    //NTContactGroup * group = _contacts[section];
+    //return group.groupDetail;
 }
 
 #pragma mark 索引
@@ -250,7 +252,7 @@
 
 #pragma mark 设置尾部说明内容高度
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    return 40;
+    return 0;
 }
 
 #pragma mark 选中行
@@ -258,14 +260,46 @@
 {
     _selectedIndexPath = indexPath;
     NTContactGroup * group = _contacts[indexPath.section];
-    NTContact * contact = group.contacts[indexPath.row];
-    UIAlertView * alertView = [[UIAlertView alloc]initWithTitle:@"System Info" message:[contact getName] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK"   , nil];
-    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    UITextField * textField = [alertView textFieldAtIndex:0];
-    textField.text = contact.mobileNumber;
-    [alertView show];
+    NTContact *contact = group.contacts[indexPath.row];
+    CustomIOSAlertView *alertview = [[CustomIOSAlertView alloc]init];
+    
+//    UIAlertView * alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"修改联系人信息" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认" , nil];
+    
+    
+    UITextField *firstName=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 290, 40)];
+    firstName.placeholder=contact.firstName;
 
+    UITextField *lastName=[[UITextField alloc]initWithFrame:CGRectMake(0, 45, 290, 40)];
+    lastName.placeholder=contact.lastName;
+    
+    UITextField *mobileNum=[[UITextField alloc]initWithFrame:CGRectMake(0, 90, 290, 40)];
+    mobileNum.placeholder=contact.mobileNumber;
+    
+    UIView *containerView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 290, 140)];
+    [containerView addSubview:firstName];
+    [containerView addSubview:lastName];
+    [containerView addSubview:mobileNum];
+    [alertview setContainerView:containerView];
+    
+    [alertview setButtonTitles:[NSMutableArray arrayWithObjects:@"确认修改",@"取消", nil]];
+
+    //[alertview setDelegate:self];
+    [alertview setUseMotionEffects:true];
+    [alertview show];
+    
+    [alertview setOnButtonTouchUpInside:^(CustomIOSAlertView *alertView, int buttonIndex) {
+        if (buttonIndex ==0)
+        {
+            contact.firstName=firstName.text;
+            contact.lastName=lastName.text;
+            contact.mobileNumber=mobileNum.text;
+            [tableView reloadData];
+        }
+        [alertView close];
+    }];
+    
 }
+
 
 #pragma mark alertView Delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
