@@ -28,14 +28,14 @@
 
 			<!-- 账号 -->
 
-			<EditText 
+			<EditText
 				android:id="@+id/username_edit"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:hint="@string/login_username_hint"
 				android:singleLine="true"
 				android:inputType="text"/>
-			
+
 		  <!-- 密码 text -->
 
 		  
@@ -88,7 +88,7 @@
 	        android:layout_marginLeft="15dp"
 	        android:layout_marginRight="15dp"
 	        android:layout_marginTop="50dp" >
-	
+
 	        <Button
 	            android:id="@+id/btn_login_regist"
 	            android:layout_width="wrap_content"

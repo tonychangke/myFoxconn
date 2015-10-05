@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
 import net.yoojia.imagemap.core.Bubble;
 import net.yoojia.imagemap.core.Shape;
 import net.yoojia.imagemap.core.ShapeExtension;
@@ -136,18 +138,20 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
 
     @Override
     public final void onShapeClick(Shape shape, float xOnImage, float yOnImage) {
-        int i;
-        for(Shape item : highlightImageView.getShapes()){
-            item.cleanBubbleRelation();
-        }
-        if(bubble_count != 0){
-            for (i=0;i<bubble_count;i++){
-                bubble[i].showAtShape(shape);
-            }
+//        int i;
+//        for(Shape item : highlightImageView.getShapes()){
+//            item.cleanBubbleRelation();
+//        }
+//        if(bubble_count != 0){
+//            for (i=0;i<bubble_count;i++){
+//                bubble[i].showAtShape(shape);
+//            }
+//
+//        }
 
-        }
+        Toast.makeText(this.getContext(), "已找到好友！",
+                Toast.LENGTH_SHORT).show();
     }
-
     /**
      * set a bitmap for image map.
      * @param bitmap image

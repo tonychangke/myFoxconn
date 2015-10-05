@@ -44,6 +44,7 @@ public class CircleShape extends Shape {
 	@Override
 	public void draw(Canvas canvas) {
 		drawPaint.setAlpha(alpha);
+        drawPaint.setAntiAlias(true);
 		canvas.drawCircle(center.x, center.y, radius, drawPaint);
 	}
 
@@ -70,12 +71,12 @@ public class CircleShape extends Shape {
     @Override
     public boolean inArea(float x, float y) {
         boolean ret = false;
-//        float dx = center.x - Math.abs(x);
-//        float dy = center.y - Math.abs(y);
-//        float d = (float)Math.sqrt((dx*dx)+(dy*dy));
-//        if (d<radius) {
-//            ret = true;
-//        }
+        float dx = center.x - Math.abs(x);
+        float dy = center.y - Math.abs(y);
+        float d = (float)Math.sqrt((dx*dx)+(dy*dy));
+        if (d<radius) {
+            ret = true;
+        }
         return ret;
     }
 

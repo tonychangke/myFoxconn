@@ -55,6 +55,7 @@ public class Lines extends Shape {
     @Override
     public void draw(Canvas canvas) {
         drawPaint.setAlpha(255);
+        drawPaint.setAntiAlias(true);
         drawPaint.setStrokeWidth(wid);
         canvas.drawLine(start.x, start.y, end.x, end.y, drawPaint);
     }
