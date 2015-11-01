@@ -27,7 +27,7 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
 															 TranslateAnimation.OnAnimationListener
 {
 
-    private HighlightImageView highlightImageView;
+    public HighlightImageView highlightImageView;
     private Bubble[] bubble;
     private int bubble_count;
 	private View viewForAnimation;
@@ -101,14 +101,16 @@ public class ImageMap extends FrameLayout implements ShapeExtension,ShapeExtensi
 
 		// 将图像中心移动到目标形状的中心坐标上
 		// Move the center point of the image to the target shape center.
-		PointF from = highlightImageView.getAbsoluteCenter();
-		PointF to = shape.getCenterPoint();
-		TranslateAnimation movingAnimation = new TranslateAnimation(from.x,to.x/4,from.y,to.y);
-		movingAnimation.setOnAnimationListener(this);
-		movingAnimation.setInterpolator(new DecelerateInterpolator());
-		movingAnimation.setDuration(9000);
-		movingAnimation.setFillAfter(false);
-		viewForAnimation.startAnimation(movingAnimation);
+
+//		PointF from = highlightImageView.getAbsoluteCenter();
+//		PointF to = shape.getCenterPoint();
+//		TranslateAnimation movingAnimation = new TranslateAnimation(from.x,to.x,from.y,to.y);
+//		movingAnimation.setOnAnimationListener(this);
+//		movingAnimation.setInterpolator(new DecelerateInterpolator());
+//		movingAnimation.setDuration(500);
+//		movingAnimation.setFillAfter(true);
+//		viewForAnimation.startAnimation(movingAnimation);
+
 		PointF offset = highlightImageView.getAbsoluteOffset();
 		shape.onTranslate(offset.x , offset.y);
 		highlightImageView.addShape(shape);

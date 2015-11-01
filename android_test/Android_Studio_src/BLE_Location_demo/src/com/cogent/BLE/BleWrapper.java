@@ -27,7 +27,7 @@ import java.util.UUID;
 
 
 public class BleWrapper {
-    /* defines (in milliseconds) how often RSSI should be updated */
+    /* defines (in millise conds) how often RSSI should be updated */
     private static final int RSSI_UPDATE_TIME_INTERVAL = 1500; // 1.5 seconds
 
     /* callback object through which we are returning results to the caller */
