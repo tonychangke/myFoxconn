@@ -78,15 +78,16 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private Lines[] lines;
     private int lines_count = 0;
     private int black_count = 0;
-
     float scalesize = 1;
+    private ParticleFilter mPF;
 	private int current_map = -1;
 	private int mapid = 0;
-    private int cur_x = 0;
-    private int cur_y = 0;
+    private float cur_x = 0;
+    private float cur_y = 0;
+    private float t_x=0,t_y=0;
     private String cur_rss="0,0,0";
     public int cnt = 0;
-
+    private PointF tmpP = new PointF(0.0f,0.0f);
     private static final int ENABLE_BT_REQUEST_ID = 1;
     private BleWrapper mBleWrapper = null;
     private boolean mScanning = false;
@@ -94,6 +95,8 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
     private ArrayList<BluetoothDevice> mDevices;
     private ArrayList<byte[]> mRecords;
     private ArrayList<Integer> mRSSIs;
+
+    public HashMap<String, Integer> BLEs = new HashMap<String, Integer>();
 
 
 
@@ -115,12 +118,27 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 mDevices = mDevicesListAdapter.GetDevice();
                 mRSSIs = mDevicesListAdapter.GetRSSI();
                 mRecords = mDevicesListAdapter.GetRecord();
-
                 if (TestControl.GetBLEInfoFlag())
                 {
+                    Log.i("test","********************");
                     for (int index = 0;index < mDevices.size();index++) {
-                        //Log.i("BLEDevice", mDevices.get(index).getName().toString());
-                        Log.i("BLERecord", mRSSIs.get(index).toString());
+                        if (mDevices.get(index).getName() != null) {
+                            Log.i("testBLEDevice", mDevices.get(index).getName().toString());
+                        }
+                        else {
+                            Log.i("testBLEDevice", "No name");
+                        }
+                        Log.i("testuuid", mDevices.get(index).getAddress());
+                        if(BLEs.get(mDevices.get(index).getAddress()) == null){
+                            BLEs.put(mDevices.get(index).getAddress(),mRSSIs.get(index));
+                        }
+                        else{
+                            if ( Math.abs(BLEs.get(mDevices.get(index).getAddress())-mRSSIs.get(index))>10 ){
+                                Log.i("test Obj BLE",mDevices.get(index).getAddress() );
+                                BLEs.put(mDevices.get(index).getAddress(),mRSSIs.get(index));
+                            }
+                        }
+                        Log.i("testBLERecord",mDevices.get(index).getAddress() + ":" + mRSSIs.get(index).toString());
                     }
                 }
             }
@@ -134,7 +152,9 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
         mBoundService = WelcomeActivity.getBoundService();
         Log.e("abc","1");
         StepCal = new StepCalculater(this);
-        StepCal.stopstep();
+        mPF = new ParticleFilter(new PointF(0, 0), 1);
+        //StepCal.stopstep();
+        StepCal.startstep((int)cur_x,(int)cur_y);
          /* start BLE scan */
         if (TestControl.GetBLEEnableFlag()) {
 
@@ -150,30 +170,52 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 bleMissing();
             }
         }
-        Log.e("abc","5");
+        Log.e("abc", "5");
         WelcomeActivity.registerObserver(this);
 		setContentView(R.layout.tab_view);
 		ContactUtils.init(this);
 		tabbar = new ViewTabber(this);
 		dbHelper = new DBHelper(this);
-
         map = (ImageMap) findViewById(R.id.imagemap);
 		initView();
 
         mHandler=new Handler()
         {
-            public void handleMessage(Message msg)
+            public void handleMessage(Message  msg)
             {
                 switch(msg.what)
                 {
                     case 1:
-                        Log.e("asbx",""+cnt);
-                        String[] tmp = new String[3];
-                        tmp[0] = "0,500,"+cnt+"00"+",1";
-                        tmp[1] = "0,300,"+cnt+"00"+",2";
-                        tmp[2] = "0,100,"+cnt+"00"+",2";
-                        parseLocation(tmp, 2);
-                        cnt = (cnt + 1) % 10;
+                        String[] tmp = new String[1];
+                        if (tmpP != map.highlightImageView.tmpPoint) {
+                            StepCal.startstep(0, 0);
+                            tmpP = map.highlightImageView.tmpPoint;
+                            mPF.Init(tmpP, scalesize);
+                        }
+                        else {
+//                        tmp[0] = "0,"+(StepCal.get_step_offset_X()*30 + 2250) + ","+ (StepCal.get_step_offset_Y()*30 + 800)+",2";
+                            float dx,dy;
+                            cur_x = StepCal.get_step_offset_X();
+                            cur_y = StepCal.get_step_offset_Y();
+                            dx = cur_x - t_x;
+                            dy = cur_y - t_y;
+                            PointF tmp2  = mPF.getNext(dx, dy);
+                            Log.e("Output", String.format("%f,",tmp2.x) + String.format("%f",tmp2.y));
+                            tmp[0] = "0," + ((int)(tmp2.x * 30) + 2250) + "," + ((int)(tmp2.y * 30) +800) + ",2";
+                            cur_x = (int)(t_x = 0);
+                            cur_y = (int)(t_y = 0);
+                            StepCal.startstep(0, 0);
+
+                            parseLocation(tmp, 2);
+                        }
+
+//                        Log.e("asbx",""+cnt);
+//                        String[] tmp = new String[3];
+//                        tmp[0] = "0,500,"+cnt+"00"+",1";
+//                        tmp[1] = "0,300,"+cnt+"00"+",2";
+//                        tmp[2] = "0,100,"+cnt+"00"+",2";
+//                        parseLocation(tmp, 2);
+//                        cnt = (cnt + 1) % 10;
                         break;
                     default:
                         break;
@@ -189,7 +231,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
                 int i = 4;
                 Looper.prepare();
 
-                while (i-- != 0) {
+                while (true) {
                     sleep(1000);
                     Message message=new Message();
                     message.what=1;
@@ -279,7 +321,8 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
 
         Bitmap OfflineMap = ((BitmapDrawable)d).getBitmap();
         scalesize = TaskUtil.calcScaleSize(OfflineMap);
-        Bitmap resizedBmp = TaskUtil.reSizeBitmap(OfflineMap, scalesize);
+        scalesize *= 1.6;
+        Bitmap resizedBmp  = TaskUtil.reSizeBitmap(OfflineMap, scalesize);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, os);
         dbHelper.insertOrUpdate(mapid, mapid, "", scalesize, os.toByteArray());
@@ -356,7 +399,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
             Log.e("Connect Failed","==============");
             if(isOnline)
                 Log.e("Start Step Calculator","================");
-            StepCal.startstep(cur_x,cur_y);
+            //StepCal.startstep(cur_x,cur_y);
             isOnline = false;
 
         }
@@ -373,7 +416,7 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
             Log.e("Connect Success","=============");
             if(!isOnline)
                 Log.e("Stop Step Calculator", "==================");
-            StepCal.stopstep();
+            //StepCal.stopstep();
             isOnline = true;
         }
         if (tag.equals(Communications.TAG_QUERY_POSITION)) {
@@ -574,11 +617,12 @@ public class LocationActivity extends BaseActivity implements BLIObserver {
             tmpp[2] = new PointF((float)200.0,(float)800.0);
             tmpp[3] = new PointF((float)500.0,(float)800.0);
             tmpp[4] = new PointF((float)500.0,(float)300.0);
-            addLines(tmpp);
+            //addLines(tmpp);
             showPostion(positionX[i], positionY[i]);
         }
     }
-    
+    @Override
+
     public void onBLUpdate(int notificationType, String args) {
         /*switch (notificationType) {
             case BLNotifier.TYPE_BLE_NOT_SUPPORT:

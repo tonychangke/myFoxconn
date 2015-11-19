@@ -1,6 +1,7 @@
 package com.cogent.QQ;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -28,12 +29,13 @@ public class StepCalculater implements Runnable, SensorEventListener {
 	public MyCompass mycom;
 
 	private boolean instep;
+	private float angle;
     private int tmp_x;
     private int tmp_y;
-	public int step_south;
-	public int step_north;
-	public int step_east;
-	public int step_west;
+	public float step_south;
+	public float step_north;
+	public float step_east;
+	public float step_west;
 
     public StepCalculater(Context context) {
     	 
@@ -47,14 +49,15 @@ public class StepCalculater implements Runnable, SensorEventListener {
          * */
         //  注册加速度传感器
 
-        Log.e("abc","2");
-        sm.registerListener(this, 
-        		sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-        		SensorManager.SENSOR_DELAY_FASTEST);//.SENSOR_DELAY_NORMAL);
+        Log.e("abc", "2");
+        sm.registerListener(this,
+				sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+				SensorManager.SENSOR_DELAY_FASTEST);//.SENSOR_DELAY_NORMAL);
 
-        Log.e("abc","3");
+        Log.e("abc", "3");
 		mycom=new MyCompass(context);
         Log.e("abc","4");
+		angle = 0;
         stepcalculate=false;
         stepcounter=0;
         spacecounter=0;
@@ -62,13 +65,14 @@ public class StepCalculater implements Runnable, SensorEventListener {
         //Log.i("1","1");
     }
 
+	public float getOrient(){
+		return angle;
+	}
     public void startstep(int x,int y){
         tmp_x = x;
         tmp_y = y;
-		step_south=0;
 		step_north=0;
 		step_east=0;
-		step_west=0;
     	stepcounter=0;
     	spacecounter=0;
     	instep=false;
@@ -87,6 +91,14 @@ public class StepCalculater implements Runnable, SensorEventListener {
 
 	public void onSensorChanged(SensorEvent event) {
 		String message = new String();
+		int angle_off = -45;
+		float angle = (mycom.x + angle_off);
+		this.angle = angle;
+		if (angle>360)
+			angle-=360;
+		if (angle<0)
+			angle+=360;
+		Log.e("StepCal Next Angle", String.format("%f,  ", angle) );
 		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 			//图解中已经解释三个值的含义
 			float X = event.values[0];
@@ -108,24 +120,11 @@ public class StepCalculater implements Runnable, SensorEventListener {
 				if(instep){
 					if(highY<0){
 						spacecounter=spacecounter+1; //What does spacecounter mean?
-						if(spacecounter>5){
+						if(spacecounter>17){
 							instep=false;
-							if(mycom.x>0 && mycom.x<45 || mycom.x<360 && mycom.x>315)
-							{
-								step_north++;
-							}
-							else if(mycom.x>45 && mycom.x<135)
-							{
-								step_east++;
-							}
-							else if(mycom.x>135 && mycom.x<225)
-							{
-								step_south++;
-							}
-							else if(mycom.x>225 && mycom.x<315)
-							{
-								step_west++;
-							}
+							step_east +=  Math.cos( (angle * Math.PI)/180 );
+							step_north -= Math.sin( (angle * Math.PI)/180 );
+							Log.e("StepCal Next Step", String.format("%f,  ", step_north) + String.format("%f", step_north));
 							stepcounter=stepcounter+1;
 							//Log.e("!!!!!!!!!!!!!!!!","3");
 						}
@@ -167,18 +166,18 @@ public class StepCalculater implements Runnable, SensorEventListener {
 	public int getsteps(){
 		return stepcounter;
 	}
-	public int get_step_offset_X()
+	public float get_step_offset_X()
 	{
-		int x=step_east-step_west;
+		float x=step_east;
 
 		return x+tmp_x;
 
 	}
 
-	public int get_step_offset_Y()
+	public float get_step_offset_Y()
 	{
 
-		int y=step_north-step_south;
+		float y=step_north;
 		return y+tmp_y;
 
 	}
