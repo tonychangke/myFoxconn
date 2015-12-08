@@ -41,29 +41,29 @@
 #pragma mark 初始化数据
 - (void)initContactData{
     
-    _contacts = [NSMutableArray array];
-    
-    NTContact * contact1 = [NTContact initWithFirstName:@"Cao" andLastName:@"aman" andMobileNumber:@"13222226666"];
-    NTContact * contact2 = [NTContact initWithFirstName:@"Cao" andLastName:@"zijian" andMobileNumber:@"13233336666"];
-    NTContactGroup * group1 = [NTContactGroup initWithName:@"C" andDetail:@"With names beginning with C" andContacts:[NSMutableArray arrayWithObjects:contact1,contact2, nil]];
-    [_contacts addObject:group1];
-    
-    NTContact * contact3 = [NTContact initWithFirstName:@"Liu" andLastName:@"xuande" andMobileNumber:@"13712346666"];
-    NTContact * contact4 = [NTContact initWithFirstName:@"Liu" andLastName:@"adou" andMobileNumber:@"13812347777"];
-    NTContact * contact10 = [NTContact initWithFirstName:@"Liu" andLastName:@"adou" andMobileNumber:@"13812347777"];
-    NTContactGroup * group2 = [NTContactGroup initWithName:@"L" andDetail:@"With names beginning with L" andContacts:[NSMutableArray arrayWithObjects:contact3,contact4,contact10, nil]];
-    [_contacts addObject:group2];
-    
-    NTContact * contact5 = [NTContact initWithFirstName:@"Sun" andLastName:@"jian" andMobileNumber:@"13222221234"];
-    NTContact * contact6 = [NTContact initWithFirstName:@"Sun" andLastName:@"quan" andMobileNumber:@"13233335678"];
-    NTContactGroup * group3 = [NTContactGroup initWithName:@"S" andDetail:@"With names beginning with S" andContacts:[NSMutableArray arrayWithObjects:contact5,contact6, nil]];
-    [_contacts addObject:group3];
-    
-    NTContact * contact7 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shao" andMobileNumber:@"13566661234"];
-    NTContact * contact8 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shu" andMobileNumber:@"13533336666"];
-    NTContact * contact9 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shu" andMobileNumber:@"13533336666"];
-    NTContactGroup * group4 = [NTContactGroup initWithName:@"Y" andDetail:@"With names beginning with Y" andContacts:[NSMutableArray arrayWithObjects:contact7,contact8,contact9, nil]];
-    [_contacts addObject:group4];
+//    _contacts = [NSMutableArray array];
+//    
+//    NTContact * contact1 = [NTContact initWithFirstName:@"Cao" andLastName:@"aman" andMobileNumber:@"13222226666"];
+//    NTContact * contact2 = [NTContact initWithFirstName:@"Cao" andLastName:@"zijian" andMobileNumber:@"13233336666"];
+//    NTContactGroup * group1 = [NTContactGroup initWithName:@"C" andDetail:@"With names beginning with C" andContacts:[NSMutableArray arrayWithObjects:contact1,contact2, nil]];
+//    [_contacts addObject:group1];
+//    
+//    NTContact * contact3 = [NTContact initWithFirstName:@"Liu" andLastName:@"xuande" andMobileNumber:@"13712346666"];
+//    NTContact * contact4 = [NTContact initWithFirstName:@"Liu" andLastName:@"adou" andMobileNumber:@"13812347777"];
+//    NTContact * contact10 = [NTContact initWithFirstName:@"Liu" andLastName:@"adou" andMobileNumber:@"13812347777"];
+//    NTContactGroup * group2 = [NTContactGroup initWithName:@"L" andDetail:@"With names beginning with L" andContacts:[NSMutableArray arrayWithObjects:contact3,contact4,contact10, nil]];
+//    [_contacts addObject:group2];
+//    
+//    NTContact * contact5 = [NTContact initWithFirstName:@"Sun" andLastName:@"jian" andMobileNumber:@"13222221234"];
+//    NTContact * contact6 = [NTContact initWithFirstName:@"Sun" andLastName:@"quan" andMobileNumber:@"13233335678"];
+//    NTContactGroup * group3 = [NTContactGroup initWithName:@"S" andDetail:@"With names beginning with S" andContacts:[NSMutableArray arrayWithObjects:contact5,contact6, nil]];
+//    [_contacts addObject:group3];
+//    
+//    NTContact * contact7 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shao" andMobileNumber:@"13566661234"];
+//    NTContact * contact8 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shu" andMobileNumber:@"13533336666"];
+//    NTContact * contact9 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shu" andMobileNumber:@"13533336666"];
+//    NTContactGroup * group4 = [NTContactGroup initWithName:@"Y" andDetail:@"With names beginning with Y" andContacts:[NSMutableArray arrayWithObjects:contact7,contact8,contact9, nil]];
+//    [_contacts addObject:group4];
     
 }
 
@@ -164,7 +164,7 @@
     }
     
     cell.textLabel.text = [contact getName];
-    cell.detailTextLabel.text = contact.mobileNumber;
+//    cell.detailTextLabel.text = contact.mobileNumber;
     // Configure the cell...
     
     return cell;
@@ -225,15 +225,15 @@
         [group.contacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             NTContact * contact = obj;
            
-            if ([contact.firstName.uppercaseString rangeOfString:keyWord.uppercaseString].location != NSNotFound ||[contact.lastName.uppercaseString rangeOfString:keyWord.uppercaseString].location != NSNotFound ||[contact.mobileNumber rangeOfString:keyWord].location != NSNotFound) {
-                [_searchContacts addObject:contact];
-            }
-        }];
-    }];
-    
-    //刷新表格
-//    [self.tableView reloadData];
-}
+//            if ([contact.firstName.uppercaseString rangeOfString:keyWord.uppercaseString].location != NSNotFound ||[contact.lastName.uppercaseString rangeOfString:keyWord.uppercaseString].location != NSNotFound ||[contact.mobileNumber rangeOfString:keyWord].location != NSNotFound) {
+//                [_searchContacts addObject:contact];
+//            }
+//        }];
+//    }];
+//    
+//    //刷新表格
+////    [self.tableView reloadData];
+//}
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath

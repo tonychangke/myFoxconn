@@ -8,11 +8,8 @@
 
 #import "loginViewController.h"
 #import "MBProgressHUD.h"
-#import "FMDB.h"
-#define DATABASE @"database"
-#define USERNAME @"username"
-#define PWD @"pwd"
-
+#import "comWithDB.h"
+#import "loginAppDelegate.h"
 
 
 @interface loginViewController()<MBProgressHUDDelegate,UIGestureRecognizerDelegate>
@@ -25,8 +22,6 @@
 {
     MBProgressHUD *HUD;
     UIAlertView *ErrorMess;
-    FMDatabase  *database;
-    
 }
 
 - (void)viewDidLoad
@@ -52,25 +47,8 @@
     ErrorMess.delegate=self;
     
     //Get current path and then create data file named "database".
-    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES) ;
-    NSString* path=[[paths objectAtIndex:0]stringByAppendingPathComponent:@"database"] ;
-    self->database=[FMDatabase databaseWithPath:path];
-//    NSString *createSql=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS '%@'( '%@' TEXT KEY,'%@' TEXT)",DATABASE,USERNAME,PWD];
-//    BOOL res=[self->database executeUpdate:createSql];
-//    if(![self->database open])
-//    {
-//        NSLog(@"Open database file error!");
-//    }
-//    else
-//    {
-//        NSLog(@"Open database file successfully!");
-//        NSString *inserSql=[NSString stringWithFormat:@"INSERT INTO '%@' ('%@','%@') VALUES ('%@','%@')",DATABASE,USERNAME,PWD,@"tony",@"tony"];
-//        res=[self->database executeUpdate:inserSql];
-//        if(!res)NSLog(@"Add tony error!");
-//        else NSLog(@"Add tony successfully!");
-//    }
     self->hasLogin=FALSE;
-    [self->database close];
+
 }
 
 // tap dismiss keyboard
@@ -93,31 +71,14 @@
 // Verifying.
 -(void)loginWithUsername
 {
-//    BOOL findUser=false;
-//    if([self->database open])
-//    {
-//        NSString *sql=[NSString stringWithFormat:@"SELECT * FROM '%@'",DATABASE];
-//        FMResultSet * rs=[self->database executeQuery:sql];
-//        while ([rs next] && !findUser)
-//        {
-//            NSString *username=[rs stringForColumn:USERNAME];
-//            NSString *password=[rs stringForColumn:PWD];
-//            if ([username isEqualToString:self.usernameTF.text] )
-//            {
-//                findUser=true;
-//                if ([password isEqualToString:self.passwordTF.text])
-//                {
-//                    self->hasLogin=true;
-                    [self  performSelectorOnMainThread:@selector(goToMainView) withObject:nil waitUntilDone:FALSE];
-//                }
-//                else
-//                {
-//                    [ErrorMess show];
-//                }
-//            }
-//        }
-//        if (!self->hasLogin)[ErrorMess show];
-        [self->database close];
+//    loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication]delegate];
+//    comWithDB *communicator=[comWithDB alloc];
+//    if ([communicator logIn:self.usernameTF.text pwd:self.passwordTF.text]) {
+//        delegate.userid=self.usernameTF.text;
+//        delegate.passwd=self.passwordTF.text;
+          [self  performSelectorOnMainThread:@selector(goToMainView) withObject:nil waitUntilDone:FALSE];
+//    }
+//    else [ErrorMess show];
 }
 
 //Login in successfully.

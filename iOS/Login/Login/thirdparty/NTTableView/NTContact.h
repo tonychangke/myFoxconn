@@ -10,23 +10,23 @@
 
 @interface NTContact : NSObject
 
-#pragma mark 姓
-@property (nonatomic ,copy) NSString * firstName;
+//#pragma mark 姓
+//@property (nonatomic ,copy) NSString * firstName;
 
 #pragma mark 名
-@property (nonatomic ,copy) NSString * lastName;
+@property (nonatomic ,copy) NSString * Name;
 
-#pragma mark 手机号码
-@property (nonatomic ,copy) NSString * mobileNumber;
+#pragma mark 用户名
+@property (nonatomic ,copy) NSString * userid;
 
 
 #pragma mark 带参数的构造函数
-- (NTContact *)initWithFirstName:(NSString *)firstName andLastName:(NSString *)lastName andMobileNumber:(NSString *)mobileNumber;
+- (NTContact *)initWithName:(NSString *)Name andUserid:(NSString *)userid;
 
 #pragma mark 获取姓名
 - (NSString *)getName;
 
 #pragma mark 带参数的静态对象初始化方法
-+ (NTContact *)initWithFirstName:(NSString *)firstName andLastName:(NSString *)lastName andMobileNumber:(NSString *)mobileNumber;
++ (NTContact *)initWithName:(NSString *)Name andUserid:(NSString *)userid;
 
 @end
