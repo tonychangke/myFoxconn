@@ -11,5 +11,7 @@
 @interface loginAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property NSString *userid;
+@property NSString *passwd;
 
 @end

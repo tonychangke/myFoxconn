@@ -10,12 +10,11 @@
 
 @implementation NTContact
 
-- (NTContact *)initWithFirstName:(NSString *)firstName andLastName:(NSString *)lastName andMobileNumber:(NSString *)mobileNumber{
+- (NTContact *)initWithName:(NSString *)Name andUserid:(NSString *)userid{
 
     if (self = [super init]) {
-        self.firstName = firstName;
-        self.lastName = lastName;
-        self.mobileNumber = mobileNumber;
+        self.Name = Name;
+        self.userid = userid;
     }
     
     return self;
@@ -23,13 +22,13 @@
 
 - (NSString *)getName{
 
-    return [NSString stringWithFormat:@"%@  %@",_firstName,_lastName];
+    return [NSString stringWithFormat:@"%@",_Name];
     
 }
 
-+ (NTContact *)initWithFirstName:(NSString *)firstName andLastName:(NSString *)lastName andMobileNumber:(NSString *)mobileNumber{
++ (NTContact *)initWithName:(NSString *)Name andUserid:(NSString *)userid{
 
-    NTContact * contact = [[NTContact alloc]initWithFirstName:firstName andLastName:lastName andMobileNumber:mobileNumber];
+    NTContact * contact = [[NTContact alloc]initWithName:Name andUserid:userid];
     
     return contact;
 }
