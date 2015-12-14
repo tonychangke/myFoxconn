@@ -496,6 +496,7 @@
                     disturbDistance = CGRectGetMinY(topViewBeginRect)-CGRectGetMinY(rootViewRect);
                     break;
                 default:
+                    disturbDistance =0;
                     break;
             }
             

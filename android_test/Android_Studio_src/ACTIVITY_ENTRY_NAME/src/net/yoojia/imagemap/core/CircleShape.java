@@ -8,7 +8,7 @@ public class CircleShape extends Shape {
 	
 	private PointF center;
 	private float radius = 5f;
-
+    private int alpha;
 	public CircleShape(Object tag, int coverColor) {
 		super(tag, coverColor);
 	}
@@ -27,6 +27,7 @@ public class CircleShape extends Shape {
 
         if(coords.length > 2){
             this.radius = coords[2];
+            this.alpha = (int)coords[3];
         }
 
 	}
@@ -42,7 +43,8 @@ public class CircleShape extends Shape {
 
 	@Override
 	public void draw(Canvas canvas) {
-		drawPaint.setAlpha(100);
+		drawPaint.setAlpha(alpha);
+        drawPaint.setAntiAlias(true);
 		canvas.drawCircle(center.x, center.y, radius, drawPaint);
 	}
 

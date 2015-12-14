@@ -1,5 +1,56 @@
 package com.cogent.QQ;
 
+import com.android.volley.VolleyError;
+import com.cogent.util.ContactUtils;
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.yoojia.imagemap.ImageMap;
+import net.yoojia.imagemap.core.Bubble;
+import net.yoojia.imagemap.core.CircleShape;
+import net.yoojia.imagemap.core.Shape;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.os.Bundle;
+import android.util.Log;
+
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewDebug;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+import android.graphics.drawable.Drawable;
+
+import com.cogent.BLE.BleWrapper;
+import com.cogent.BLE.BleWrapperUiCallbacks;
+import com.cogent.BLE.DeviceListAdapter;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import java.util.ArrayList;
+import android.content.Intent;
+
+import com.cogent.Communications.Communications;
+import com.cogent.DataBase.BLConstants;
+import com.cogent.DataBase.DBHelper;
+import com.cogent.ViewMenu.ViewTabber;
+
+import com.cogent.Communications.BLNotifier;
+import com.cogent.Communications.BLIObserver;
+import com.cogent.util.HttpUtil;
+import com.cogent.util.TaskUtil;
+import android.os.Handler;
+import android.os.Message;
+import com.hp.hpl.sparta.xpath.Step;
+
+import javax.sql.CommonDataSource;
 import java.util.HashMap;
 import java.util.Map;
 import android.util.Log;

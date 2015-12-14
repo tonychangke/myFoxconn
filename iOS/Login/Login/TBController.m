@@ -14,9 +14,7 @@
 {
     //[super viewDidLoad];
     //self.index=1;
-    self.tabBarController.selectedViewController = [self.tabBarController.viewControllers objectAtIndex:1];
-    [self.tabBarController setSelectedIndex:1];
-    NSLog(@"I'm here");
-    
+//    self.tabBarController.selectedViewController = [self.tabBarController.viewControllers objectAtIndex:1];
+//    [self.tabBarController setSelectedIndex:2];
 }
 @end

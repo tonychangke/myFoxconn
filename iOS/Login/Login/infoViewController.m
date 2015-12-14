@@ -8,15 +8,22 @@
 #import <UIKit/UIKit.h>
 #import "infoViewController.h"
 #import "registerViewController.h"
+#import "TBController.h"
 
 @implementation infoViewController
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     ////self.name.text=registerViewController.nick;
     //self.phone.text=registerViewController.phone;
     //self.ID.text=registerViewController.;
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    if ([segue.identifier isEqualToString:@"back2tab"])
+    {
+       [segue.destinationViewController setSelectedIndex:2];
+    }
 }
 
 

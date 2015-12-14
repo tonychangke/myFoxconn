@@ -18,6 +18,7 @@ public interface BLConstants {
     public static final String API_TEST3 = URL_Service + "static/images/1.bmp";
     public static final String API_TEST4 = URL_Service + "locimg/";//"static/images/";
     public static final String API_TEST5 = URL_Service + "Lyy_test_rss";//"upload_rss/";
+    public static final String API_TEST_CONNECT = URL_Service + "Lyy_is_connect/";
 
     public static final String API_REGISTER = URL_Service + "register";
     public static final String API_REGISTER_BY_PHONE = URL_Service + "registerByPhone";

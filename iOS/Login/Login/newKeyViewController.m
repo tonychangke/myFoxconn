@@ -13,12 +13,16 @@
     self.oldKey=[[UITextField alloc] init];
     self.key=[[UITextField alloc] init];
     self.confirm=[[UITextField alloc] init];
-    
-        
-    
 }
 
 - (IBAction)yes:(id)sender {
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    if ([segue.identifier isEqualToString:@"back3tab"])
+    {
+        [segue.destinationViewController setSelectedIndex:2];
+    }
 }
 
 @end

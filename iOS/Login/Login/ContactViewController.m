@@ -10,6 +10,9 @@
 #import "NTContact.h"
 #import "NTContactGroup.h"
 #import "CustomIOSAlertView.h"
+#import "comWithDB.h"
+#import "loginAppDelegate.h"
+#import "TBController.h"
 
 #define kContactToolbarHeight 64
 
@@ -45,9 +48,7 @@
     _tableView.delegate = self;
     
     [self.view addSubview:_tableView];
-    
     [self addToolbar];
-	
 }
 
 #pragma mark 添加工具栏
@@ -56,53 +57,72 @@
     _toolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, kContactToolbarHeight)];
     //    _toolbar.backgroundColor=[UIColor colorWithHue:246/255.0 saturation:246/255.0 brightness:246/255.0 alpha:1];
     [self.view addSubview:_toolbar];
-    UIBarButtonItem *removeButton=[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(remove)];
+    //UIBarButtonItem *removeButton=[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(remove)];
     UIBarButtonItem *flexibleButton=[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     UIBarButtonItem *addButton=[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(add)];
-    NSArray *buttonArray=[NSArray arrayWithObjects:removeButton,flexibleButton,addButton, nil];
+    NSArray *buttonArray=[NSArray arrayWithObjects:flexibleButton,addButton, nil];
     _toolbar.items=buttonArray;
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    if ([segue.identifier isEqualToString:@"showFriendPosition"])
+    {
+        [segue.destinationViewController setSelectedIndex:0];
+        [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
+        [UIView commitAnimations];
+    }
 }
 
 #pragma mark 删除
 - (void)remove{
     _isInsert = false;
     [_tableView setEditing:!_tableView.isEditing animated:true];
-
 }
 
 -(void)add{
-    _isInsert = true;
-    [_tableView setEditing:!_tableView.isEditing animated:true];
+    [self performSegueWithIdentifier:@"addFriend" sender:self];
     
 }
 
 #pragma mark 初始化数据
 - (void)initContactData{
-
-    _contacts = [NSMutableArray array];
+//    comWithDB *communicator=[[comWithDB alloc] init];
+//    loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication] delegate];
+    //NSString *temString=[communicator getFriendList:delegate.userid];
+    _contacts=[NSMutableArray array];
+    NSString *infoString = @"Changke,Tony;Dcag,Be;Boy,djfkkf;Big,konw;Change,nfdn";
+    NSMutableArray *infoArray=[[infoString componentsSeparatedByString:@";"]mutableCopy];
+    infoArray=[[infoArray sortedArrayUsingSelector:@selector(compare:)]mutableCopy];
     
-    NTContact * contact1 = [NTContact initWithFirstName:@"Cao" andLastName:@"aman" andMobileNumber:@"13222226666"];
-    NTContact * contact2 = [NTContact initWithFirstName:@"Cao" andLastName:@"zijian" andMobileNumber:@"13233336666"];
-    NTContactGroup * group1 = [NTContactGroup initWithName:@"C" andDetail:@"With names beginning with C" andContacts:[NSMutableArray arrayWithObjects:contact1,contact2, nil]];
-    [_contacts addObject:group1];
+    NSArray *friArray=[NSArray array];
+    NTContact *temContact=[[NTContact alloc]init];
+    NTContactGroup *lastGroup=[[NTContactGroup alloc]init];
+    NSMutableArray *currentGroup=[NSMutableArray array];
+    unichar currentName,lastName;
+    NSInteger length=0;
     
-    NTContact * contact3 = [NTContact initWithFirstName:@"Liu" andLastName:@"xuande" andMobileNumber:@"13712346666"];
-    NTContact * contact4 = [NTContact initWithFirstName:@"Liu" andLastName:@"adou" andMobileNumber:@"13812347777"];
-    NTContact * contact10 = [NTContact initWithFirstName:@"Liu" andLastName:@"adou" andMobileNumber:@"13812347777"];
-    NTContactGroup * group2 = [NTContactGroup initWithName:@"L" andDetail:@"With names beginning with L" andContacts:[NSMutableArray arrayWithObjects:contact3,contact4,contact10, nil]];
-    [_contacts addObject:group2];
-    
-    NTContact * contact5 = [NTContact initWithFirstName:@"Sun" andLastName:@"jian" andMobileNumber:@"13222221234"];
-    NTContact * contact6 = [NTContact initWithFirstName:@"Sun" andLastName:@"quan" andMobileNumber:@"13233335678"];
-    NTContactGroup * group3 = [NTContactGroup initWithName:@"S" andDetail:@"With names beginning with S" andContacts:[NSMutableArray arrayWithObjects:contact5,contact6, nil]];
-    [_contacts addObject:group3];
-    
-    NTContact * contact7 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shao" andMobileNumber:@"13566661234"];
-    NTContact * contact8 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shu" andMobileNumber:@"13533336666"];
-    NTContact * contact9 = [NTContact initWithFirstName:@"Yuan" andLastName:@"shu" andMobileNumber:@"13533336666"];
-    NTContactGroup * group4 = [NTContactGroup initWithName:@"Y" andDetail:@"With names beginning with Y" andContacts:[NSMutableArray arrayWithObjects:contact7,contact8,contact9, nil]];
-    [_contacts addObject:group4];
-    
+    for(NSString *friInfo in infoArray){
+        length++;
+        friArray = [friInfo componentsSeparatedByString:@","];
+        temContact=[NTContact initWithName:friArray[0] andUserid:friArray[1]];
+        currentName=[temContact.Name characterAtIndex:0];
+        if (length == 1 ) {
+            lastName=currentName;
+            [currentGroup addObject:temContact];
+        }
+        else{
+            if (currentName != lastName){
+                lastGroup=[NTContactGroup initWithName:[NSString stringWithFormat:@"%c",lastName] andDetail:@" " andContacts:currentGroup];
+                [_contacts addObject:lastGroup];
+                currentGroup=[NSMutableArray array];
+                [currentGroup addObject:temContact];
+                lastName=currentName;
+            }
+            else [currentGroup addObject:temContact];
+        }
+    }
+    lastGroup=[NTContactGroup initWithName:[NSString stringWithFormat:@"%c",currentName] andDetail:@" " andContacts:currentGroup];
+    [_contacts addObject:lastGroup];
 }
 
 #pragma mark - 实现delegate(数据源方法)
@@ -154,7 +174,7 @@
     NTContactGroup * group = _contacts[indexPath.section];
     NTContact * contact = group.contacts[indexPath.row];
     cell.textLabel.text = [contact getName];
-    cell.detailTextLabel.text = contact.mobileNumber;
+    cell.detailTextLabel.text = contact.userid;
     return cell;
 
 }
@@ -164,6 +184,7 @@
     NTContactGroup * group = _contacts[section];
     return group.groupName;
 }
+
 
 #pragma mark 编辑操作（删除或添加）
 //实现了此方法向左滑动就会显示删除（或添加）图标
@@ -181,9 +202,9 @@
     }else if (editingStyle == UITableViewCellEditingStyleInsert){
         
         NTContact * addContact = [[NTContact alloc]init];
-        addContact.firstName = @"Guan";
-        addContact.lastName = @"yu";
-        addContact.mobileNumber = @"12345678901";
+//        addContact.firstName = @"Guan";
+//        addContact.lastName = @"yu";
+//        addContact.mobileNumber = @"12345678901";
         [group.contacts insertObject:addContact atIndex:indexPath.row];
         [tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     }
@@ -261,42 +282,39 @@
     _selectedIndexPath = indexPath;
     NTContactGroup * group = _contacts[indexPath.section];
     NTContact *contact = group.contacts[indexPath.row];
-    CustomIOSAlertView *alertview = [[CustomIOSAlertView alloc]init];
+//    CustomIOSAlertView *alertview = [[CustomIOSAlertView alloc]init];
+   UIAlertView * alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"是否在地图中显示%@的位置?",contact.Name] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认" , nil];
+  
+//    UITextField *firstName=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 290, 40)];
+//    //firstName.placeholder=contact.firstName;
+//
+//    UITextField *lastName=[[UITextField alloc]initWithFrame:CGRectMake(0, 45, 290, 40)];
+//    //lastName.placeholder=contact.lastName;
+//    
+//    UITextField *mobileNum=[[UITextField alloc]initWithFrame:CGRectMake(0, 90, 290, 40)];
+//    mobileNum.placeholder=contact.userid;
+//
     
-//    UIAlertView * alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"修改联系人信息" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认" , nil];
-    
-    
-    UITextField *firstName=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 290, 40)];
-    firstName.placeholder=contact.firstName;
+//    UILabel *label=[[UILabel alloc]initWithFrame:CGRectMake(0, 0, 290, 40)];
+//    label.text=[NSString stringWithFormat:@"是否在地图中显示%@的位置?",contact.Name];
+//    
+//    UIView *containerView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 300, 60)];
+//    [containerView addSubview:label];
+//
+//    [alertview setContainerView:containerView];
+//    [alertview setButtonTitles:[NSMutableArray arrayWithObjects:@"确认",@"取消", nil]];
+//    [alertview setDelegate:self];
+//    [alertview setUseMotionEffects:true];
+    [alertView show];
 
-    UITextField *lastName=[[UITextField alloc]initWithFrame:CGRectMake(0, 45, 290, 40)];
-    lastName.placeholder=contact.lastName;
-    
-    UITextField *mobileNum=[[UITextField alloc]initWithFrame:CGRectMake(0, 90, 290, 40)];
-    mobileNum.placeholder=contact.mobileNumber;
-    
-    UIView *containerView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 290, 140)];
-    [containerView addSubview:firstName];
-    [containerView addSubview:lastName];
-    [containerView addSubview:mobileNum];
-    [alertview setContainerView:containerView];
-    
-    [alertview setButtonTitles:[NSMutableArray arrayWithObjects:@"确认修改",@"取消", nil]];
-
-    //[alertview setDelegate:self];
-    [alertview setUseMotionEffects:true];
-    [alertview show];
-    
-    [alertview setOnButtonTouchUpInside:^(CustomIOSAlertView *alertView, int buttonIndex) {
-        if (buttonIndex ==0)
-        {
-            contact.firstName=firstName.text;
-            contact.lastName=lastName.text;
-            contact.mobileNumber=mobileNum.text;
-            [tableView reloadData];
-        }
-        [alertView close];
-    }];
+//
+//    [alertview setOnButtonTouchUpInside:^(CustomIOSAlertView *alertView, int buttonIndex) {
+//        if (buttonIndex ==0)
+//        {
+//                        [tableView reloadData];
+//        }
+//        [alertView close];
+//    }];
     
 }
 
@@ -304,16 +322,14 @@
 #pragma mark alertView Delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 1) {
-        UITextField * textField = [alertView textFieldAtIndex:0];
-        
-        //修改数据模型
-        NTContactGroup * group = _contacts[_selectedIndexPath.section];
-        NTContact * contanct = group.contacts[_selectedIndexPath.row];
-        contanct.mobileNumber = textField.text;
-        //刷新列表
+        [self performSegueWithIdentifier:@"showFriendPosition" sender:self];
+//        //修改数据模型
+//        NTContactGroup * group = _contacts[_selectedIndexPath.section];
+//        NTContact * contanct = group.contacts[_selectedIndexPath.row];
+//        //刷新列表
 //        [_tableView reloadData];//修改某一数据而刷新整个列表 不可取
-        NSArray * indexPaths = @[_selectedIndexPath];//需要局部刷新的组、行
-        [_tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationLeft];////后面的参数代表更新时的动画
+//        NSArray * indexPaths = @[_selectedIndexPath];//需要局部刷新的组、行
+//        [_tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationLeft];////后面的参数代表更新时的动画
     }
 
 }
@@ -326,7 +342,7 @@
 
 #pragma mark 切换开关转化事件
 -(void)switchValueChange:(UISwitch *)sw{
-    NSLog(@"section:%i,switch:%i",sw.tag, sw.on);
+    NSLog(@"section:%ld,switch:%i",sw.tag, sw.on);
 }
 - (void)didReceiveMemoryWarning
 {

@@ -23,14 +23,11 @@
     self.password=[[UITextField alloc] init];
     self.confirm=[[UITextField alloc] init];
 
-    
-    
-    
 }
 
-//- (IBAction)sender:(id)sender {
-//    comWithDB * DB = [[comWithDB alloc ]init];
-//    [DB reg:self.ID,pwd:self.password,nm:self.nick,utp:1,mbl:self.phone,sx:'m'];
-//}
+- (IBAction)sender:(id)sender {
+    comWithDB * DB = [[comWithDB alloc ]init];
+    [DB reg:self.ID.text pwd:self.password.text nm:self.nick.text utp:1 mbl:self.phone.text sx:@"m"];
+}
 
 @end
