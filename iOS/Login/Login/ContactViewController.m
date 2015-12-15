@@ -10,7 +10,7 @@
 #import "NTContact.h"
 #import "NTContactGroup.h"
 #import "CustomIOSAlertView.h"
-#import "comWithDB.h"
+#import "AFNetworking.h"
 #import "loginAppDelegate.h"
 #import "TBController.h"
 
@@ -25,6 +25,8 @@
 
     UIToolbar * _toolbar;
     BOOL _isInsert;//记录是点击了插入还是删除按钮
+    NSMutableString* contactString;
+    bool ready;
 }
 
 @end
@@ -34,21 +36,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    UILabel *lable=[[UILabel alloc]init];
+    lable.text=@"联系人";
     
     
     self.navigationController.navigationBar.hidden = YES;
+    //contactString=[[NSMutableString alloc]initWithString:@"tes1,chagn;r3,jfsl"];
+    contactString=[[NSMutableString alloc]initWithString:@"123,tony"];
+    ready=false;
     //初始化数据
     [self initContactData];
-    
-    //创建一个分组样式的tablev
-    _tableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
-    _tableView.contentInset=UIEdgeInsetsMake(kContactToolbarHeight-20, 0, 0, 0);
-    //注意必须实现对应的UITableViewDataSource协议(设置数据源)
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    
-    [self.view addSubview:_tableView];
-    [self addToolbar];
 }
 
 #pragma mark 添加工具栏
@@ -80,18 +77,36 @@
 }
 
 -(void)add{
-    [self performSegueWithIdentifier:@"addFriend" sender:self];
+    [self performSegueWithIdentifier:@"Friend" sender:self];
     
 }
 
+
 #pragma mark 初始化数据
 - (void)initContactData{
-//    comWithDB *communicator=[[comWithDB alloc] init];
-//    loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication] delegate];
-    //NSString *temString=[communicator getFriendList:delegate.userid];
+    loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    NSString *url = @"http://202.120.36.137:5000/req_friend/";
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager.responseSerializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
+    manager.responseSerializer=[AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
+    NSDictionary *parameters = @{@"userid": delegate.userid};
+
+    [self contactDataProcess];
+   [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [contactString setString:[operation responseString]];
+        [self contactDataProcess];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        [contactString setString:[operation responseString]];
+        NSLog(contactString,nil);
+        [self contactDataProcess];
+    }];
+}
+-(void)contactDataProcess {
     _contacts=[NSMutableArray array];
-    NSString *infoString = @"Changke,Tony;Dcag,Be;Boy,djfkkf;Big,konw;Change,nfdn";
-    NSMutableArray *infoArray=[[infoString componentsSeparatedByString:@";"]mutableCopy];
+    NSLog(contactString,nil);
+    NSMutableArray *infoArray=[[contactString componentsSeparatedByString:@";"]mutableCopy];
+    
     infoArray=[[infoArray sortedArrayUsingSelector:@selector(compare:)]mutableCopy];
     
     NSArray *friArray=[NSArray array];
@@ -123,6 +138,17 @@
     }
     lastGroup=[NTContactGroup initWithName:[NSString stringWithFormat:@"%c",currentName] andDetail:@" " andContacts:currentGroup];
     [_contacts addObject:lastGroup];
+    
+    _tableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    _tableView.contentInset=UIEdgeInsetsMake(kContactToolbarHeight-20, 0, 0, 0);
+    //注意必须实现对应的UITableViewDataSource协议(设置数据源)
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    
+    
+    [self.view addSubview:_tableView];
+    [self addToolbar];
+
 }
 
 #pragma mark - 实现delegate(数据源方法)

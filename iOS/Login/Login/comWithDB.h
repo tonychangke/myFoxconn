@@ -7,12 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AFNetworking.h"
 
-@interface comWithDB : NSURL{
-}
+@interface comWithDB : NSObject
+
+-(void)nothing;
 - (BOOL) logIn:(NSString *)userid pwd:(NSString *)password;
-- (int) reg:(NSString *)userid pwd:(NSString *)password nm:(NSString *) name utp:(int)usertype mbl:(NSString *)mobile sx:(NSString *)sexual;
-- (NSString *) getFriendList:(NSString *)userid;
+- (int) reg:(NSString *)userid pwd:(NSString *)password nm:(NSString *) name utp:(NSString *)usertype mbl:(NSString *)mobile sx:(NSString *)sexual;
 -(NSString *)getMap:(NSInteger)mapid;
 -(NSDictionary *)getFriendPosition:(NSString *)userid fi:(NSString *)friendid;
+-(NSString *)addFriend:(NSString *)userid fi:(NSString *)friendid;
+
 @end

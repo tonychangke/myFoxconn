@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface AddFriendViewController : UIViewController
-
+- (IBAction)addFriend:(id)sender;
+@property (strong, nonatomic) IBOutlet UITextField *friendid;
 @end

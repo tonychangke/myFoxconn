@@ -8,8 +8,8 @@
 
 #import "loginViewController.h"
 #import "MBProgressHUD.h"
-#import "comWithDB.h"
 #import "loginAppDelegate.h"
+#import "AFNetworking.h"
 
 
 @interface loginViewController()<MBProgressHUDDelegate,UIGestureRecognizerDelegate>
@@ -29,6 +29,7 @@
     
     [super viewDidLoad];
     
+
     HUD = [[MBProgressHUD alloc] initWithView:self.view];
 	[self.view addSubview:HUD];
 	
@@ -54,7 +55,7 @@
 // tap dismiss keyboard
 -(void)dismissKeyboard {
     [self.view endEditing:YES];
-    [self.passwordTF resignFirstResponder];
+    //[self.passwordTF resignFirstResponder];
 }
 
 - (void)didReceiveMemoryWarning
@@ -63,22 +64,28 @@
 }
 
 - (IBAction)Login:(id)sender {
-    // MBProgressHUD后台新建子线程执行任务
-    [HUD showWhileExecuting:@selector(loginWithUsername) onTarget:self withObject:nil animated:TRUE];
+    [HUD showWhileExecuting:@selector(logIn) onTarget:self withObject:nil animated:TRUE];
 }
 
-
-// Verifying.
--(void)loginWithUsername
-{
-//    loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication]delegate];
-//    comWithDB *communicator=[comWithDB alloc];
-//    if ([communicator logIn:self.usernameTF.text pwd:self.passwordTF.text]) {
-//        delegate.userid=self.usernameTF.text;
-//        delegate.passwd=self.passwordTF.text;
-          [self  performSelectorOnMainThread:@selector(goToMainView) withObject:nil waitUntilDone:FALSE];
-//    }
-//    else [ErrorMess show];
+- (void ) logIn{
+    NSString *url = @"http://202.120.36.137:5000/login/";
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager.responseSerializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
+    manager.responseSerializer=[AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
+    NSDictionary *parameters = @{@"userid": self.usernameTF.text,@"passwd":self.passwordTF.text};
+    
+    [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSString *result=[operation responseString];
+        if([result isEqualToString:@"0"]){
+            loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication]delegate];
+            delegate.userid=self.usernameTF.text;
+            delegate.passwd=self.passwordTF.text;
+            [self goToMainView];
+        }
+        else [ErrorMess show];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Login error:%@",error);
+    }];
 }
 
 //Login in successfully.

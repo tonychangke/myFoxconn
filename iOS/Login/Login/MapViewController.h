@@ -1,6 +1,5 @@
 //  CarImageViewController.h
 //  CarValet
-
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
 #import <CoreBluetooth/CoreBluetooth.h>

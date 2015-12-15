@@ -7,13 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "comWithDB.h"
+#import "AFNetworking.h"
 @interface registerViewController : UIViewController
 - (IBAction)sender:(id)sender;
 @property (strong, nonatomic) IBOutlet UITextField *ID;
-@property (strong, nonatomic) IBOutlet UITextField *nick;
-@property (strong, nonatomic) IBOutlet UITextField *phone;
-@property (strong, nonatomic) IBOutlet UITextField *password;
-@property (strong, nonatomic) IBOutlet UITextField *confirm;
-@property (strong, nonatomic) comWithDB *DB;
+@property (strong, nonatomic) IBOutlet UITextField *name;
+@property (strong, nonatomic) IBOutlet UITextField *sex;
+@property (strong, nonatomic) IBOutlet UITextField *phoneNum;
+@property (strong, nonatomic) IBOutlet UITextField *type;
+@property (strong, nonatomic) IBOutlet UITextField *pwd;
+@property (strong, nonatomic) IBOutlet UITextField *confirmPwd;
+
+//@property (strong, nonatomic) comWithDB *DB;
 @end

@@ -10,12 +10,15 @@
 #import "IQKeyboardManager.h"
 #import "TTObject.h"
 
+
 @implementation loginAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     TTObject* obj = [[TTObject alloc] init];
     [obj startTimer];
+    self.userid=@"test1";
+    self.passwd=@"nicai";
     // Override point for customization after application launch.
     
     //ONE LINE OF CODE.

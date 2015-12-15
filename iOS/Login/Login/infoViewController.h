@@ -9,11 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface infoViewController : UIViewController
-@property (strong, nonatomic) IBOutlet UILabel *name;
 
-@property (strong, nonatomic) IBOutlet UILabel *phone;
-
-@property (strong, nonatomic) IBOutlet UILabel *ID;
 
 
 @end
