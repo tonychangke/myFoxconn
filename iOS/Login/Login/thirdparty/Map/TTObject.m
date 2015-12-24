@@ -25,7 +25,7 @@
 	if (self.timer.isValid) return;
 	
 	else
-		self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(onTimeFire ) userInfo:nil repeats:YES];
+		self.timer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(onTimeFire ) userInfo:nil repeats:YES];
 //				__weak TTObject* wkself = self;
 //		self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:wkself selector:@selector(onTimeFire) userInfo:nil repeats:YES];
 	

@@ -5,6 +5,20 @@
 #import "MapViewController.h"
 #import "RSSModel.h"
 #import "offline.h"
+#import "AFNetworking.h"
+#import "loginAppDelegate.h"
+#import "TTObject.h"
+
+@interface MapViewController()
+@property (strong,nonatomic ) NSMutableArray *rssArray; // of string
+@property (strong,nonatomic ) NSMutableArray *Rsscache1;//滤波缓存区
+@property (strong,nonatomic ) NSMutableArray *Rsscache2;//滤波缓存区
+@property (strong,nonatomic ) NSMutableArray *Rsscache3;//滤波缓存区
+@property (strong,nonatomic ) NSMutableArray *Rsscache4;//滤波缓存区
+@property (strong,nonatomic ) NSMutableArray *Rsscache5;//滤波缓存区
+@property (strong,nonatomic ) NSMutableArray *Rsscache6;//滤波缓存区
+
+@end
 
 @implementation MapViewController {
     NSArray *carImageNames;//arguments of showing images
@@ -25,24 +39,98 @@
     NSFileHandle *outFile;
     CMAttitude *initAttitude;
     
+    
+    double viewX;
+    double viewY;
     double startX;//the x coordinate of the start point
     double startY;//the y coordinate of the start point
     double boundaryXmin;
     double boundaryXmax;
     double boundaryYmin;
     double boundaryYmax;
+    double initDirection;
+    double oldDirection;
+    double currentDirection;
+    double mapDirection;
     
     NSInteger num;//arguments of ble measuring
     NSInteger bleChange;
+    ///////
+    //NSInteger i;
+    NSInteger j;
+    NSInteger k;
+    NSInteger l;
+    NSInteger m;
+    NSInteger n;
+    NSInteger sum1;
+    NSInteger sum2;
+    NSInteger sum3;
+    NSInteger sum4;
+    NSInteger sum5;
+    NSInteger sum6;
+    //////
     NSMutableDictionary *rssReceived;
     RSSModel *sample;
     //OffLine *location;
     ///////
     
-    double bleRSS[7];//arguments of ble based position determination
-    int bleTime[7];
+    double bleRSS[8];//arguments of ble based position determination
+    int bleNum;
+    int bleTime[8];
     int testTime;
+    double bleposx[7];//蓝牙位置
+    double bleposy[7];
+    int std;
+    int RssAvg[7];
+    int sum;
+    double posx;
+    double posy;
     
+    NSInteger where;
+    TTObject *timer;
+}
+
+- (NSMutableArray *)rssArray {
+    if (!_rssArray )
+        
+        _rssArray = [[NSMutableArray alloc] init];
+    return _rssArray;
+}
+- (NSMutableArray *)Rsscache1 {
+    if (!_Rsscache1 )
+        
+        _Rsscache1 = [[NSMutableArray alloc] init];
+    return _Rsscache1;
+}
+- (NSMutableArray *)Rsscache2 {
+    if (!_Rsscache2 )
+        
+        _Rsscache2 = [[NSMutableArray alloc] init];
+    return _Rsscache2;
+}
+- (NSMutableArray *)Rsscache3 {
+    if (!_Rsscache3 )
+        
+        _Rsscache3 = [[NSMutableArray alloc] init];
+    return _Rsscache3;
+}
+- (NSMutableArray *)Rsscache4 {
+    if (!_Rsscache4 )
+        
+        _Rsscache4 = [[NSMutableArray alloc] init];
+    return _Rsscache4;
+}
+- (NSMutableArray *)Rsscache5 {
+    if (!_Rsscache5 )
+        
+        _Rsscache5 = [[NSMutableArray alloc] init];
+    return _Rsscache5;
+}
+- (NSMutableArray *)Rsscache6 {
+    if (!_Rsscache6 )
+        
+        _Rsscache6 = [[NSMutableArray alloc] init];
+    return _Rsscache6;
 }
 
 
@@ -102,40 +190,54 @@
     //[carImageContainerView addSubview:v_four];//
 }
 ////////////
+-(void)uploadPosition{
+    NSString *url = @"http://202.120.36.137:5000/update_position/";
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager.responseSerializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
+    manager.responseSerializer=[AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
+    loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication]delegate];
+    NSDictionary *parameters = @{@"userid": @"admin",@"position":[NSString stringWithFormat:@"%@,%f,%f",@"0",xx+startX+viewX,yy+startY+viewY]};
+    
+    [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        //NSLog(@"Success");
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        //NSLog(@“Login error:%@“,error);
+    }];
+    return;
+}
+-(void)getBLEs{
+    NSString *url = @"http://202.120.36.137:5000/login/";
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager.responseSerializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
+    manager.responseSerializer=[AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
+    NSDictionary *parameters = @{@"mapid": @"1"};
+    
+    [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        timer=[[TTObject alloc]init];
+        [timer startTimer];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Login error:%@",error);
+    }];
+    return;
+}
 -(void)showview{
     
+    if (bleChange >0) {
+        self.bleChangeLabel.text = [NSString stringWithFormat:@"%lf",bleChange/5.0];
+    }
+    else self.bleChangeLabel.text = [NSString stringWithFormat:@"ready"];
+    
+    NSNumber *tmp;
+    NSString *sliderValue;
+    tmp = [NSNumber numberWithDouble:initDirection];
+    sliderValue = [tmp stringValue];
+    [self.sliderLabel setText:sliderValue];
     
     CMAccelerometerData *newestAccel = self.motionManager.accelerometerData;
     CMDeviceMotion *deviceMotion = self.motionManager.deviceMotion;
     [self.motionManager startDeviceMotionUpdates];
-    
-    
-    
-    
-    
-    double x = newestAccel.acceleration.x;
-    //NSLog(@"%lf",x);
-    NSString *str = [NSString stringWithFormat:@"%lf",x];
-    NSData  *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-    [outFile writeData:data];
-    double y = newestAccel.acceleration.y;
-    str = [NSString stringWithFormat:@"%lf",y];//NSLog(@"%lf",y);
-    data = [str dataUsingEncoding:NSUTF8StringEncoding];
-    [outFile writeData:data];
-    double z = newestAccel.acceleration.z;
-    str = [NSString stringWithFormat:@"%lf",z];//NSLog(@"%lf",z);
-    data = [str dataUsingEncoding:NSUTF8StringEncoding];
-    [outFile writeData:data];
-    
-    
-    
-    
-    
-    
-    
-    
-    //CMGyroData *newestgyro = self.motionManager.gyroData;
-    // CLHeading *heading = self.locationManager.heading;
+    initDirection = self.directionSlider.value;
+    initDirection = (initDirection-0.5)*3.14159*2;
     
     self.motionManager.accelerometerUpdateInterval = 0.01; // 告诉manager，更新频率是100Hz
     [self.motionManager startAccelerometerUpdates];
@@ -155,24 +257,8 @@
         
     }
     
-    /* [self.locationManager requestAlwaysAuthorization];
-     if(!self.locationManager){[self.xlabel setText:[NSString stringWithFormat:@"%@",@"disabled"]];
-     [self.locationManager requestAlwaysAuthorization];
-     
-     }
-     else{
-     self.locationManager = [[CLLocationManager alloc] init];
-     self.locationManager.delegate = self;
-     [self.locationManager startUpdatingHeading];
-     
-     //self.locationManager.h
-     [self.zlabel setText:[NSString stringWithFormat:@"%f",heading.trueHeading]];
-     }*/
-    
-    
+   
     self.results=[[NSMutableDictionary alloc]init];
-    
-    
     
     [_manager scanForPeripheralsWithServices:nil options:@{CBCentralManagerScanOptionAllowDuplicatesKey : @YES }];
     [image1 removeFromSuperview];
@@ -190,30 +276,44 @@
         
     }
     
-    step=20;
+    currentDirection = initDirection-deviceMotion.attitude.yaw+mapDirection;
+    
+    
+    if (oldDirection - currentDirection >0.2) {
+        step = 6;
+    }
+    else step = 12;
+    oldDirection = currentDirection;
     
     if(moving==1){
-        double tmpxx = xx-step*sin(deviceMotion.attitude.yaw);
-        
-        
-        double tmpyy = yy-step*cos(deviceMotion.attitude.yaw);
-        
-        if((tmpxx+startX<boundaryXmax)&&(tmpxx+startX>boundaryXmin)&&(tmpyy+startY<boundaryYmax)&&(tmpyy+startY>boundaryYmin))
+        if(bleChange>0)bleChange--;
+        double tmpxx = xx+step*sin(currentDirection);
+        double tmpyy = yy-step*cos(currentDirection);
+        //NSLog(@"%i",[self checkObstacle:tmpxx+startX Ycoordinate:tmpyy+startY]);
+        if((tmpxx+startX<boundaryXmax)&&(tmpxx+startX>boundaryXmin)&&(yy+startY<boundaryYmax)&&(yy+startY>boundaryYmin)&&[self checkObstacle:tmpxx+startX Ycoordinate:yy+startY])
         {
             //NSLog(@"%d",1);
             xx = tmpxx;
+        }
+        if((xx+startX<boundaryXmax)&&(xx+startX>boundaryXmin)&&(tmpyy+startY<boundaryYmax)&&(tmpyy+startY>boundaryYmin)&&[self checkObstacle:xx+startX Ycoordinate:tmpyy+startY])
+        {
+            //NSLog(@"%d",1);
+        
             yy = tmpyy;
         }
+      
         
         
         checkMove--;
     }
     
+    [self uploadPosition];
     
-    
-    image1 = [[UIImageView alloc] initWithFrame:CGRectMake(xx+startX,yy+startY, 20,20)];
-    image1.image=[UIImage imageNamed:@"self.png"];
+    image1 = [[UIImageView alloc] initWithFrame:CGRectMake(xx+startX+viewX,yy+startY+viewY, 40,40)];
+    image1.image=[UIImage imageNamed:@"arrow.png"];
     [carImageContainerView addSubview:image1];
+    image1.transform = CGAffineTransformMakeRotation(currentDirection);
+    
     [image2 removeFromSuperview];
     image2 = [[UIImageView alloc] initWithFrame:CGRectMake(80,60, 20,20)];
     image2.image=[UIImage imageNamed:@"friend.png"];
@@ -222,6 +322,36 @@
     
     if(checkMove>0)checkMove=checkMove-1;
     if(checkRotate>0)checkRotate=checkRotate-1;
+    
+    if(where == 1 && xx+startX>150 && yy+startY>350)
+    {
+        where = 2;
+        startX = 50;
+        startY = 320;
+        mapDirection = -3.1415/2;
+        xx = 0;
+        yy = 0;
+        carImageNames = @[@"room445.jpg"];
+        NSLog(@"to room445");
+        [self setupScrollContent];
+        boundaryXmax = 340;
+        boundaryYmax = 340;
+    }
+    if(where == 2 && xx+startX<40 && yy+startY > 330)
+    {
+        where = 1;
+        startX = 100;
+        startY = 330;
+        mapDirection=0;
+        NSLog(@"to floor");
+        carImageNames = @[ @"floor.png"];
+        [self setupScrollContent];
+        boundaryXmax = 400;
+        boundaryYmax = 400;
+        
+    }
+    
+    
 }
 ///************** moving part end ****************
 
@@ -235,16 +365,38 @@
     [self.locationManager startUpdatingHeading];
     [self.motionManager startDeviceMotionUpdates];
     
+    bleChange = 15;
+    
+    bleNum = 6;
+    bleposx[0] = 130;
+    bleposy[0] = 320;
+    bleposx[1] = 270;
+    bleposy[1] = 320;
+    
     //xx = 0;
     //yy = 0;
-    testTime = 30;
+    where = 1;
+    mapDirection = 0;
+    oldDirection = 0;
     
-    startX = 20;
-    startY = 285;
+    viewX = 0;
+    viewY = 0;
+    
+    testTime = 5;
+    
+    startX = 90;
+    startY = 60;
     boundaryXmin = 15;
     boundaryYmin = 30;
-    boundaryXmax = 290;
-    boundaryYmax = 290;
+    boundaryXmax = 400;
+    boundaryYmax = 400;
+    
+    for (int i = 0;i<bleNum;++i)
+    {
+        bleRSS[i] = 0;
+        bleTime[i] = 0;
+    }
+    
     
     
    // CMAttitude * initAttitude = self.motionManager.deviceMotion.attitude;
@@ -267,7 +419,7 @@
     
     
     self.resetZoomButton.enabled = NO;
-    carImageNames = @[ @"room445.jpg",@"p3.jpg",@"p4.jpg"];
+    carImageNames = @[ @"floor.png"];
     [self setupScrollContent];
     ///////
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(showview) name:@"showView" object:nil];
@@ -291,6 +443,34 @@
     [super viewWillAppear:animated];
     
     [self updateCarNumberLabel];
+}
+
+- (bool)checkObstacle:(int)tmpx Ycoordinate:(int)tmpy {
+    if(where == 2){
+        if (tmpx<50&&tmpy<280)
+            return false;
+        if (tmpx<140&&tmpx>110&&tmpy<260)
+            return false;
+        if (tmpx<250&&tmpx>190&&tmpy<290)
+            return false;
+        if (tmpx>320)
+            return false;
+        if (tmpy<60)
+            return false;
+        if (tmpy>360)
+            return false;
+        return true;
+    }
+    else{
+        if(tmpx<45)
+            return false;
+
+        if(tmpx>100&&tmpy<320)
+            return false;
+        return true;
+    }
+
+
 }
 
 
@@ -374,74 +554,82 @@
     }
 }
 
+
 -(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
-    //NSLog(@"%@ 's rssi is %@",peripheral.identifier.UUIDString,RSSI);
+    if (moving == 1) {
+        return;
+    }
+    
     [_results setValue:[NSString stringWithFormat:@"%@",RSSI] forKey:[NSString stringWithFormat:@"%@",peripheral.identifier.UUIDString]];
     
     NSString *uuid = [peripheral.identifier.UUIDString substringFromIndex:24];
-    
-    //NSLog(uuid);
+    //NSLog(@"%@ 's rssi is %@",uuid,RSSI);
+   
     
     int tmp;
     tmp = [RSSI intValue];
+    std=-70;
+    if(tmp<-90||tmp >0)return;
+    
+    //if ([uuid isEqualToString:@"71D84185E43E"])
+    //{
+    //    NSLog(@"%@",RSSI);
+    //}
+    
     bool flag = true;
     
-    for(int i=0;i<7;++i)
+    
+    
+    for(int i=0;i<bleNum;++i)
     {
         //NSLog(@"%d",bleTime[i]);
         if(bleTime[i]<testTime)flag = false;//NSLog(@"%d",i);
         
     }
     
-    if(!flag)
+    if(!flag&&bleChange==0)
     {
-        //NSLog(@"*");
-        if([uuid isEqualToString:@"2311FF526C8C"])
+        if([uuid isEqualToString:@"71D84185E43E"])
         {
             //NSLog(@"changed1");
+            //NSLog(@"uuid 's rssi is %@", RSSI);
             bleRSS[0] += tmp;
             bleTime[0]++;
         }
-        if([uuid isEqualToString:@"E57FB07C0991"])
+        if([uuid isEqualToString:@"79004F7CDDBC"])
         {
             //NSLog(@"changed2");
+            //NSLog(@"uuid 's rssi is %@", RSSI);
             bleRSS[1] += tmp;
             bleTime[1]++;
         }
-        if([uuid isEqualToString:@"B088AB1A62A3"])
+        if([uuid isEqualToString:@"DED65D22A19C"])
         {
-            //NSLog(@"changed3");
+            //NSLog(@"changed5");
             bleRSS[2] += tmp;
             bleTime[2]++;
             
         }
-        if([uuid isEqualToString:@"E23E35A0F0A1"])
+        if([uuid isEqualToString:@"4FB56F7111CE"])
         {
-            //NSLog(@"changed4");
+            //NSLog(@"changed6");
             bleRSS[3] += tmp;
             bleTime[3]++;
             
         }
-        if([uuid isEqualToString:@"FF5F466294F1"])
+        if([uuid isEqualToString:@"552001760663"])
         {
-            //NSLog(@"changed5");
-            bleRSS[4] += tmp;
+            //NSLog(@"changed7");
+            bleRSS[4]+= tmp;
             bleTime[4]++;
             
         }
-        if([uuid isEqualToString:@"3996EB5E586B"])
-        {
-            //NSLog(@"changed6");
-            bleRSS[5] += tmp;
-            bleTime[5]++;
-            
-        }
-        if([uuid isEqualToString:@"508B41ADB4ED"])
+        if([uuid isEqualToString:@"C10BBAD3DE9C"])
         {
             //NSLog(@"changed7");
-            bleRSS[6]+= tmp;
-            bleTime[6]++;
+            bleRSS[5]+= tmp;
+            bleTime[5]++;
             
         }
         
@@ -449,132 +637,138 @@
     }
     else
     {
-        NSLog(@"&");
-        int maxID = 0;
-        for(int i=0;i<7;++i)
+        if(bleChange == 0)
         {
-            NSLog(@"%f",bleRSS[i]/bleTime[i]);
-            NSLog(@"%d",bleTime[i]);
-            if(bleRSS[i]/bleTime[i]>bleRSS[maxID]/bleTime[maxID])maxID=i;
-        }
-        NSLog(@"%d",maxID);
+            int maxID = 0;
+            for(int i=0;i<bleNum;++i)
+            {
+                //NSLog(@"%f",bleRSS[i]/bleTime[i]);
+                //NSLog(@"%d",bleTime[i]);
+                if(bleRSS[i]/bleTime[i]>bleRSS[maxID]/bleTime[maxID])maxID=i;
+            }
+            
+            if (maxID == 0 && bleRSS[maxID]/bleTime[maxID]>-55) {
+                bleChange = 15;
+                NSLog(@"AT 0");
+                xx = 240;
+                yy = 10;
+            }
+            if (maxID == 1 && bleRSS[maxID]/bleTime[maxID]>-55) {
+                bleChange = 15;
+                NSLog(@"AT 1");
+                xx = 120;
+                yy = 20;
+            }
+            if (maxID == 2 && bleRSS[maxID]/bleTime[maxID]>-1) {
+                bleChange = 15;
+                NSLog(@"AT 2");
+                xx=0;
+                yy=0;
+            }
+            if (maxID == 3 && bleRSS[maxID]/bleTime[maxID]>-48) {
+                bleChange = 15;
+                NSLog(@"AT 3");
+                xx = 0;
+                yy = 70-startY;
+            }
+            if (maxID == 4 && bleRSS[maxID]/bleTime[maxID]>-55) {
+                bleChange = 15;
+                NSLog(@"AT 4");
+                xx = 120;
+                yy = 70-startY;
+            }
+            if (maxID == 5 && bleRSS[maxID]/bleTime[maxID]>-55) {
+                bleChange = 15;
+                NSLog(@"AT 5");
+                xx = 250;
+                yy = 70-startY;
+            }
+            /*if (maxID == 6 && bleRSS[maxID]/bleTime[maxID]>-65) {
+                NSLog(@"AT 6");
+                xx = 280;
+                yy = 20;
+            }
+            if (maxID == 7 && bleRSS[maxID]/bleTime[maxID]>-65) {
+                NSLog(@"AT 7");
+                xx = 320;
+                yy = -50;
+            }
+             */
+            
+            for(int i=0;i<bleNum;++i)
+            {
+                
+                bleRSS[i]=0;
+                bleTime[i]=0;
+            }
+            
+            
         
-        
-        if (maxID == 0 && bleRSS[maxID]/bleTime[maxID]>-100) {
-            xx = 30;
-            yy = -80;
+         /*   NSLog(@"&");
+            // int maxID = 0;
+            for(int i=0;i<7;++i)
+            {
+                NSLog(@"%f",bleRSS[i]/bleTime[i]);
+                NSLog(@"%d",bleTime[i]);
+                RssAvg[i]=bleRSS[i]/bleTime[i];
+            }
+            
+            for(int i=0;i<7;i++ )
+            {
+                if(RssAvg[i]!=0)
+                {
+                    if (RssAvg[i]>std)
+                    {
+                        sum+=RssAvg[i]-std;
+                    }
+                    
+                    
+                }
+                
+            }
+            for (int i=0;i<7;i++)
+            {
+                if(RssAvg[i]!=0)
+                {
+                    if (RssAvg[i]>std)
+                    {
+                        posx=bleposx[i]*((RssAvg[i]-std)/(double)sum);
+                        posy=bleposy[i]*((RssAvg[i]-std)/(double)sum);
+                    }
+                    
+                }
+                
+            }
+            xx = posx - startX;//xx是相对门的位置，posx是实际位置，这里需要写出两者的转换关系,多闻！这里不要忘记改！
+            yy = posy - startY;
+            
+            for(int i=0;i<7;++i)
+            {
+                //NSLog(@"%f",bleRSS[i]);
+                bleRSS[i]=0;
+                bleTime[i]=0;
+                RssAvg[i]=0;
+            }*/
+           
         }
-        if (maxID == 1 && bleRSS[maxID]/bleTime[maxID]>-100) {
-            xx = 30;
-            yy = -160;
-        }
-        if (maxID == 2 && bleRSS[maxID]/bleTime[maxID]>-100) {
-            xx=100;
-            yy=-10;
-        }
-        if (maxID == 3 && bleRSS[maxID]/bleTime[maxID]>-100) {
-            xx = 200;
-            yy = -10;
-        }
-        if (maxID == 4 && bleRSS[maxID]/bleTime[maxID]>-100) {
-            xx = 270;
-            yy = -50;
-        }
-        if (maxID == 5 && bleRSS[maxID]/bleTime[maxID]>-100) {
-            xx = 270;
-            yy = -100;
-        }
-        if (maxID == 6 && bleRSS[maxID]/bleTime[maxID]>-100) {
-            xx = 270;
-            yy = -180;
-        }
-        
-        for(int i=0;i<7;++i)
-        {
-            //NSLog(@"%f",bleRSS[i]);
-            bleRSS[i]=0;
-            bleTime[i]=0;
-        }
-        
         
     }
     
     
     
-    
-    /*
-     if(tmp>-50&&bleChange==0)
-     {
-     
-     
-     
-     if([uuid isEqualToString:@"2311FF526C8C"])
-     {
-     NSLog(@"changed1");
-     bleChange = 10;
-     xx = 30;
-     yy = -80;
-     }
-     if([uuid isEqualToString:@"E5FB07C0991"])
-     {
-     NSLog(@"changed2");
-     bleChange = 10;
-     xx = 30;
-     yy = -160;
-     }
-     if([uuid isEqualToString:@"B088AB1A62A3"])
-     {
-     NSLog(@"changed3");
-     bleChange = 10;
-     xx=100;
-     yy=-10;
-     }
-     if([uuid isEqualToString:@"E23E35A0F0A1"])
-     {
-     NSLog(@"changed4");
-     bleChange = 10;
-     xx = 200;
-     yy = -10;
-     }
-     if([uuid isEqualToString:@"FF5F466294F1"])
-     {
-     NSLog(@"changed5");
-     bleChange = 10;
-     xx = 270;
-     yy = -50;
-     }
-     if([uuid isEqualToString:@"3996EB5E586B"])
-     {
-     NSLog(@"changed6");
-     bleChange = 10;
-     xx = 270;
-     yy = -100;
-     }
-     if([uuid isEqualToString:@"508B41ADB4ED"])
-     {
-     NSLog(@"changed7");
-     bleChange = 10;
-     xx = 270;
-     yy = -180;
-     }
-     
-     }
-     
-     if(bleChange>0)bleChange--;
-     */
-    
-    
-    
-    
+    //NSLog(@"%@",RSSI);
     // to-do 查询UUID是否在已知设备列表
     //if([peripheral.identifier.UUIDString isEqualToString:@"468B03B5-5702-0794-7B1B-7E5A89760ECD"]){}
     //else return;
     
     
-    if (!rssReceived)
+    /*if (!rssReceived)
         rssReceived = [[NSMutableDictionary alloc] init];
     BOOL existed = NO;
-    for (NSString* key in rssReceived) {
+    NSString* key;
+    key = uuid;
+    /*for (key in rssReceived) {
+        key = [key substringFromIndex:24];
         if ([key isEqualToString:peripheral.identifier.UUIDString]) {
             existed = YES;
             break;
@@ -583,14 +777,168 @@
     if (!existed) {
         [rssReceived setObject:[NSString stringWithFormat:@"%@",RSSI] forKey:peripheral.identifier.UUIDString];
     }
-    NSMutableArray *rssArray = [[NSMutableArray alloc] init]; // of string
-    for (id key in rssReceived) {
+    
+    
+    [self.rssArray addObject:@"123"];
+    [self.rssArray addObject:@"123"];
+    [self.rssArray addObject:@"123"];
+    [self.rssArray addObject:@"123"];
+    [self.rssArray addObject:@"123"];
+    [self.rssArray addObject:@"123"];
+    //for (id key in rssReceived) {
+    
         NSString *value = [rssReceived objectForKey:key];
-        [rssArray addObject:value];
-    }
+        float valuenum=[value floatValue];
     
-    [sample rssInput:rssArray];
     
+        if ([key isEqualToString:@"2311FF526C8C"])
+        {
+            NSLog(@"1");
+            NSLog(key);
+            if (i==10)  {[self.Rsscache1 removeObjectAtIndex:0];i=i-1;}
+            self.Rsscache1[i]=[NSNumber numberWithFloat:valuenum];
+            
+            if(i==9)
+            {
+                for (int a=0;a<=9;a++)
+                {sum1 =sum1+[self.Rsscache1[a] floatValue];}
+                sum1=sum1/10;//求均值
+                self.rssArray[0]=[NSNumber numberWithFloat:sum1];
+                sum1=0;
+                
+            }
+            if (i<10) i=i+1;
+            xx = 0;
+            yy = 0;
+        }
+    */
+        //threshold
+        //
+        //        if ([key isEqualToString:@"uuid1"])
+        //        {   if(i<=9)
+        //           {self.Rsscache1[i]=[NSNumber numberWithFloat:valuenum];//*
+        //               i=i+1;
+        //           }
+        //            if(i==10)
+        //            {   int length;
+        //                length=10;
+        //                for (int a=0;a<=9;a++)
+        //                  {sum1 =sum1+[self.Rsscache1[a] floatValue];}  //***
+        //                   sum1=sum1/10;//求均值   //**
+        //                for(int a=0;a<=9;a++)
+        //                {
+        //                    if([self.Rsscache1[a] floatValue]>sum1*1.1 ) //*
+        //                    {
+        //                        sum1+=[self.Rsscache1[a] floatValue];//**
+        //                        length=length-1;
+        //                    }
+        //                }
+        //
+        //                sum1=sum1/length ;//过滤后求均值   //**
+        //                self.rssArray[0]=[NSNumber numberWithFloat:sum1];//**
+        //                [self.Rsscache1 removeAllObjects];//*
+        //                i=0;
+        //                sum1=0;//*
+        //            }
+        //        }
+        
+        //////////////
+        
+     /*  if ([key isEqualToString:@"508B41ADB4ED"])
+        {NSLog(@"2");
+            if (j==10)  {[self.Rsscache2 removeObjectAtIndex:0];j=j-1;}
+            self.Rsscache2[j]=[NSNumber numberWithFloat:valuenum];
+            
+            if(j==9)
+            {
+                for (int a=0;a<=9;a++)
+                {sum2 =sum2+[self.Rsscache2[a] floatValue];}
+                sum2=sum2/10;//求均值
+                self.rssArray[1]=[NSNumber numberWithFloat:sum2];
+                sum2=0;
+            }
+            if (j<10) j=j+1;
+            xx =23;
+            yy =220;
+        }
+        
+        if ([key isEqualToString:@"3996EB5E586B"])
+        {NSLog(@"3");
+            if (k==10)  {[self.Rsscache3 removeObjectAtIndex:0];k=k-1;}
+            self.Rsscache3[k]=[NSNumber numberWithFloat:valuenum];
+            
+            if(k==9)
+            {
+                for (int a=0;a<=9;a++)
+                {sum3 =sum3+[self.Rsscache3[a] floatValue];}
+                sum3=sum3/10;//求均值
+                self.rssArray[2]=[NSNumber numberWithFloat:sum3];
+                sum3=0;
+            }
+            if (k<10) k=k+1;
+            xx =23;
+            yy =40;
+        }
+        
+        if ([key isEqualToString:@"E57FB07C0991"])
+        {
+            
+            if (l==10)  {[self.Rsscache4 removeObjectAtIndex:0];l=l-1;}
+            self.Rsscache4[l]=[NSNumber numberWithFloat:valuenum];
+            if(l==9)
+            {
+                for (int a=0;a<=9;a++)
+                {sum4 =sum4+[self.Rsscache4[a] floatValue];}
+                sum4=sum4/10;//求均值
+                self.rssArray[3]=[NSNumber numberWithFloat:sum4];
+                sum4=0;
+            }
+            if (l<10) l=l+1;
+            xx =103;
+            yy =243;
+        }
+        
+        
+        if ([key isEqualToString:@"E23E35A0F0A1"])
+        {NSLog(@"here");
+            if (m==10)  {[self.Rsscache5 removeObjectAtIndex:0];m=m-1;}
+            self.Rsscache5[m]=[NSNumber numberWithFloat:valuenum];
+            if(m==9)
+            {
+                for (int a=0;a<=9;a++)
+                {sum5 =sum5+[self.Rsscache5[a] floatValue];}
+                sum5=sum5/10;//求均值
+                self.rssArray[4]=[NSNumber numberWithFloat:sum5];
+                sum5=0;
+            }
+            if (m<10) m=m+1;
+            xx =103;
+            yy =100;
+        }
+        
+        if ([key isEqualToString:@"uuid6"])
+        {
+            if (n==10)  {[self.Rsscache6 removeObjectAtIndex:0];n=n-1;}
+            self.Rsscache5[n]=[NSNumber numberWithFloat:valuenum];
+            if(n==9)
+            {
+                for (int a=0;a<=9;a++)
+                {sum6 =sum6+[self.Rsscache6[a] floatValue];}
+                sum6=sum6/10;//求均值
+                self.rssArray[5]=[NSNumber numberWithFloat:sum6];
+                sum6=0;
+            }
+            if (n<10) n=n+1;
+            xx =23;
+            yy =243;
+        }
+        
+        
+    
+    if ([self.rssArray count]==5)//6这里写ap的数量,表示只有收到所有ap的uuid后开始后续计算
+[sample rssInput:self.rssArray];
+    
+    */
     //
     //    NSMutableDictionary *test=[[NSMutableDictionary alloc]init];
     //    [test setValue:@"TEST" forKey:@"fd"];
@@ -643,8 +991,8 @@
     //    //NSLog(@"%@",location.theta);
     //    [self.bleLabel setText:[NSString stringWithFormat:@"%@",location.theta]];
     //    }
-}
 
+}
 @end
 
 

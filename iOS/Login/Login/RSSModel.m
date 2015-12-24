@@ -109,7 +109,7 @@
         
         //rssreceivenum=standardRSSnum;
         float rssdistancenum;
-        rssdistancenum=pow(10,((rssreceivenum+(double)80)/(-(double)20)));//core用接收到的rss算距离distance
+        rssdistancenum=pow(10,((rssreceivenum+(double)60)/(-(double)20)));//core用接收到的rss算距离distance
    
         //RSSreceive[i]=[NSNumber numberWithFloat:rssreceivenum];
         RSSdistance[i]=[NSNumber numberWithFloat:rssdistancenum];  //传到offline.m中的距离数组
@@ -125,8 +125,16 @@
     a1 = [[NSMutableArray alloc] init];
     a2 = [[NSMutableArray alloc] init];
     
-    [a1 addObject:@"0"];
-    [a2 addObject:@"0"];
+    [a1 addObject:@"23"];
+    [a2 addObject:@"220"];
+    [a1 addObject:@"23"];
+    [a2 addObject:@"78"];
+    [a1 addObject:@"103"];
+    [a2 addObject:@"243"];
+    [a1 addObject:@"103"];
+    [a2 addObject:@"100"];
+    [a1 addObject:@"23"];
+    [a2 addObject:@"300"];
     
     NSMutableArray * theta;
     theta = [[NSMutableArray alloc] init];
