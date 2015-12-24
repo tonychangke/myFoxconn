@@ -99,7 +99,7 @@
         [self contactDataProcess];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
-    //    [self contactDataProcess];
+        [self contactDataProcess];
     }];
 }
 -(void)contactDataProcess {
