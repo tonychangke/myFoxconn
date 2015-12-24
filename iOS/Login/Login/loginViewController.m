@@ -44,8 +44,6 @@
     tap.delegate = self;
     
     //Massagebox show when error loading.
-    ErrorMess=[[UIAlertView alloc] initWithTitle:@"登录失败" message:@"用户名或密码错误" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
-    ErrorMess.delegate=self;
     
     //Get current path and then create data file named "database".
     self->hasLogin=FALSE;
@@ -68,21 +66,41 @@
 }
 
 - (void ) logIn{
-    NSString *url = @"http://202.120.36.137:5000/login/";
+    NSString *url = @"http://202.120.36.137:5000/mobile_login/";
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager.responseSerializer setAcceptableContentTypes:[NSSet setWithObject:@"text/html"]];
     manager.responseSerializer=[AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
     NSDictionary *parameters = @{@"userid": self.usernameTF.text,@"passwd":self.passwordTF.text};
     
     [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSString *result=[operation responseString];
-        if([result isEqualToString:@"0"]){
-            loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication]delegate];
-            delegate.userid=self.usernameTF.text;
-            delegate.passwd=self.passwordTF.text;
-            [self goToMainView];
+       NSNumber *tem;
+       NSLog(@"%@",responseObject);
+        if (responseObject)
+        {
+             tem=responseObject[@"flag"];
+            NSLog(@"%@",tem);
+            if ([tem isEqualToNumber: [NSNumber numberWithInt: 3]]) {
+                loginAppDelegate *delegate=(loginAppDelegate *)[[UIApplication sharedApplication]delegate];
+                delegate.userid = self.usernameTF.text;
+                delegate.passwd = self.passwordTF.text;
+                [self goToMainView];
+                
+                
+            }
+            if([tem isEqualToNumber: [NSNumber numberWithInt: 2]]){
+                ErrorMess=[[UIAlertView alloc] initWithTitle:@"登录失败" message:@"无法重复登录" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
+                ErrorMess.delegate=self;
+            }
+            if([tem isEqualToNumber: [NSNumber numberWithInt: 1]]){
+                ErrorMess=[[UIAlertView alloc] initWithTitle:@"登录失败" message:@"密码错误" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
+                ErrorMess.delegate=self;
+            }
+            if([tem isEqualToNumber: [NSNumber numberWithInt: 0]]){
+                ErrorMess=[[UIAlertView alloc] initWithTitle:@"登录失败" message:@"用户不存在" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
+                ErrorMess.delegate=self;
+            }
+            
         }
-        else [ErrorMess show];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Login error:%@",error);
     }];

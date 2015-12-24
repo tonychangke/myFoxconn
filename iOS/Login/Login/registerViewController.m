@@ -79,24 +79,29 @@
                 NSDictionary *parameters = @{@"userid": self.ID.text,@"passwd":self.pwd.text,@"name":self.name.text,@"usertype":self.type.text,@"mobile":self.phoneNum.text,@"sexual":self.sex.text};
 
                 [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                    NSString *result=[operation responseString];
-                    if([result isEqualToString:@"2"]){
-                        Mess=[[UIAlertView alloc] initWithTitle:@"注册失败" message:@"用户名已存在" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
-                        Mess.delegate=self;
-                        [Mess show];
-                    }
-                    if([result isEqualToString:@"1"]){
-                        Mess=[[UIAlertView alloc] initWithTitle:@"注册失败" message:@"数据库写入失败" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
-                        Mess.delegate=self;
-                        [Mess show];
-                    }
-                    if([result isEqualToString:@"0"]){
-                        Mess=[[UIAlertView alloc] initWithTitle:@"注册成功" message:@"恭喜" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
-                        Mess.delegate=self;
-                        [Mess show];
-                    }
+                    if (responseObject) {
+                    NSLog(@"%@",responseObject);
+                    NSString *tem = responseObject[@"flag"];
+                        if ([tem isEqualToString:@"2"]) {
+                            Mess=[[UIAlertView alloc] initWithTitle:@"注册失败" message:@"用户名已存在" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
+                            Mess.delegate=self;
+                            [Mess show];
+                        }
+                        if ([tem isEqualToString:@"1"]) {
+                            Mess=[[UIAlertView alloc] initWithTitle:@"注册成功" message:@"恭喜" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
+                            Mess.delegate=self;
+                            [Mess show];
+                        }
+                        if ([tem isEqualToString:@"0"]) {
+                            Mess=[[UIAlertView alloc] initWithTitle:@"注册失败" message:@"数据库失败" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
+                            Mess.delegate=self;
+                            [Mess show];                        }
+                }
                 }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                      NSLog(@"Login error:%@",error);
+                    Mess=[[UIAlertView alloc] initWithTitle:@"注册失败" message:@"未知错误" delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:nil];
+                    Mess.delegate=self;
+                    [Mess show];
                 }];
             }
         }
