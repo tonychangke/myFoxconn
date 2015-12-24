@@ -17,12 +17,17 @@
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *resetZoomButton;
 @property (strong,nonatomic) CMStepCounter *stepCounter;
+@property (strong, nonatomic) IBOutlet UILabel *bleChangeLabel;
+
 @property (strong, nonatomic) IBOutlet UILabel *countLabel;
 @property (nonatomic, strong) CBCentralManager *manager;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property(readonly, nonatomic) CLLocationDirection trueHeading;
+@property (strong, nonatomic) IBOutlet UILabel *sliderLabel;
+
+@property (strong, nonatomic) IBOutlet UISlider *directionSlider;
 
 @property (strong,nonatomic) NSMutableArray *nAPs;
 @property (strong,nonatomic)NSMutableDictionary *results;

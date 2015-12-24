@@ -27,11 +27,6 @@
 		116179D91B83459B007C53F6 /* NTContactGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 116179D21B83459B007C53F6 /* NTContactGroup.m */; };
 		116179E71B835429007C53F6 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 116179E61B835429007C53F6 /* ContactViewController.m */; };
 		116E582F1B7BA1A700EAFED0 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 116E582E1B7BA1A700EAFED0 /* libsqlite3.dylib */; };
-		1174F7F01C2AED1000C4B650 /* settingIcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1174F7ED1C2AED1000C4B650 /* settingIcon.jpg */; };
-		1174F7F11C2AED1000C4B650 /* friendIcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1174F7EE1C2AED1000C4B650 /* friendIcon.jpg */; };
-		1174F7F21C2AED1000C4B650 /* contactIcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1174F7EF1C2AED1000C4B650 /* contactIcon.jpg */; };
-		1174F7F41C2AED9200C4B650 /* mapIcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1174F7F31C2AED9200C4B650 /* mapIcon.jpg */; };
-		119A72191C2A8CBB008FD93B /* tabBarItem1.m in Sources */ = {isa = PBXBuildFile; fileRef = 119A72181C2A8CBB008FD93B /* tabBarItem1.m */; };
 		11A76C711BC2B78B00572BDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11A76C6F1BC2B78B00572BDD /* Main.storyboard */; };
 		11BB665B1BC2796400F868D5 /* AddFriendViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11BB665A1BC2796400F868D5 /* AddFriendViewController.m */; };
 		11C1F6421BD51119008FB2C6 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11C1F6411BD51119008FB2C6 /* ExternalAccessory.framework */; };
@@ -72,6 +67,8 @@
 		235FE83318B9DE270021ECBD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 235FE83118B9DE270021ECBD /* InfoPlist.strings */; };
 		235FE83518B9DE270021ECBD /* LoginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 235FE83418B9DE270021ECBD /* LoginTests.m */; };
 		8867F2411BB95C5000F9CC1A /* TTObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8867F2401BB95C5000F9CC1A /* TTObject.m */; };
+		888536881C22F05600EEF9FE /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 888536871C22F05600EEF9FE /* arrow.png */; };
+		8885368E1C230DE800EEF9FE /* floor.png in Resources */ = {isa = PBXBuildFile; fileRef = 8885368D1C230DE800EEF9FE /* floor.png */; };
 		8896DB701BB1852700C78966 /* registerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8896DB6F1BB1852700C78966 /* registerViewController.m */; };
 		8896DB731BB19F7B00C78966 /* newKeyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8896DB721BB19F7B00C78966 /* newKeyViewController.m */; };
 		8896DB761BB1B06C00C78966 /* infoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8896DB751BB1B06C00C78966 /* infoViewController.m */; };
@@ -79,9 +76,8 @@
 		8896DB8C1BB92C7800C78966 /* CarEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8896DB871BB92C7800C78966 /* CarEditViewController.m */; };
 		8896DB931BB92C9100C78966 /* friend.png in Resources */ = {isa = PBXBuildFile; fileRef = 8896DB8E1BB92C9100C78966 /* friend.png */; };
 		8896DB941BB92C9100C78966 /* p2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8896DB8F1BB92C9100C78966 /* p2.jpg */; };
-		8896DB951BB92C9100C78966 /* p3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8896DB901BB92C9100C78966 /* p3.jpg */; };
+		8896DB951BB92C9100C78966 /* A.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8896DB901BB92C9100C78966 /* A.jpg */; };
 		8896DB961BB92C9100C78966 /* p4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8896DB911BB92C9100C78966 /* p4.jpg */; };
-		8896DB971BB92C9100C78966 /* self.png in Resources */ = {isa = PBXBuildFile; fileRef = 8896DB921BB92C9100C78966 /* self.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,12 +127,6 @@
 		116179E51B835429007C53F6 /* ContactViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactViewController.h; sourceTree = "<group>"; };
 		116179E61B835429007C53F6 /* ContactViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactViewController.m; sourceTree = "<group>"; };
 		116E582E1B7BA1A700EAFED0 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
-		1174F7ED1C2AED1000C4B650 /* settingIcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = settingIcon.jpg; path = picture/settingIcon.jpg; sourceTree = "<group>"; };
-		1174F7EE1C2AED1000C4B650 /* friendIcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = friendIcon.jpg; path = picture/friendIcon.jpg; sourceTree = "<group>"; };
-		1174F7EF1C2AED1000C4B650 /* contactIcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = contactIcon.jpg; path = picture/contactIcon.jpg; sourceTree = "<group>"; };
-		1174F7F31C2AED9200C4B650 /* mapIcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = mapIcon.jpg; path = picture/mapIcon.jpg; sourceTree = "<group>"; };
-		119A72171C2A8CBB008FD93B /* tabBarItem1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tabBarItem1.h; sourceTree = "<group>"; };
-		119A72181C2A8CBB008FD93B /* tabBarItem1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tabBarItem1.m; sourceTree = "<group>"; };
 		11A76C701BC2B78B00572BDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		11BB66591BC2796400F868D5 /* AddFriendViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddFriendViewController.h; sourceTree = "<group>"; };
 		11BB665A1BC2796400F868D5 /* AddFriendViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddFriendViewController.m; sourceTree = "<group>"; };
@@ -191,6 +181,8 @@
 		235FE83418B9DE270021ECBD /* LoginTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginTests.m; sourceTree = "<group>"; };
 		8867F23F1BB95C5000F9CC1A /* TTObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTObject.h; path = thirdparty/Map/TTObject.h; sourceTree = "<group>"; };
 		8867F2401BB95C5000F9CC1A /* TTObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTObject.m; path = thirdparty/Map/TTObject.m; sourceTree = "<group>"; };
+		888536871C22F05600EEF9FE /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = arrow.png; path = picture/arrow.png; sourceTree = "<group>"; };
+		8885368D1C230DE800EEF9FE /* floor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = floor.png; path = picture/floor.png; sourceTree = "<group>"; };
 		8896DB6E1BB1851400C78966 /* registerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = registerViewController.h; sourceTree = "<group>"; };
 		8896DB6F1BB1852700C78966 /* registerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = registerViewController.m; sourceTree = "<group>"; };
 		8896DB711BB19F7B00C78966 /* newKeyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = newKeyViewController.h; sourceTree = "<group>"; };
@@ -206,9 +198,8 @@
 		8896DB881BB92C7800C78966 /* CarEditViewControllerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CarEditViewControllerProtocol.h; path = thirdparty/Map/CarEditViewControllerProtocol.h; sourceTree = "<group>"; };
 		8896DB8E1BB92C9100C78966 /* friend.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = friend.png; path = picture/friend.png; sourceTree = "<group>"; };
 		8896DB8F1BB92C9100C78966 /* p2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = p2.jpg; path = picture/p2.jpg; sourceTree = "<group>"; };
-		8896DB901BB92C9100C78966 /* p3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = p3.jpg; path = picture/p3.jpg; sourceTree = "<group>"; };
+		8896DB901BB92C9100C78966 /* A.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = A.jpg; path = picture/A.jpg; sourceTree = "<group>"; };
 		8896DB911BB92C9100C78966 /* p4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = p4.jpg; path = picture/p4.jpg; sourceTree = "<group>"; };
-		8896DB921BB92C9100C78966 /* self.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = self.png; path = picture/self.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -302,8 +293,6 @@
 				11E510EF1C203457006992FC /* newTabBarViewController.m */,
 				8896DB721BB19F7B00C78966 /* newKeyViewController.m */,
 				8896DB711BB19F7B00C78966 /* newKeyViewController.h */,
-				119A72171C2A8CBB008FD93B /* tabBarItem1.h */,
-				119A72181C2A8CBB008FD93B /* tabBarItem1.m */,
 				8896DB741BB1B06C00C78966 /* infoViewController.h */,
 				8896DB751BB1B06C00C78966 /* infoViewController.m */,
 				11A76C6F1BC2B78B00572BDD /* Main.storyboard */,
@@ -322,16 +311,13 @@
 		235FE81018B9DE270021ECBD /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				8885368D1C230DE800EEF9FE /* floor.png */,
+				888536871C22F05600EEF9FE /* arrow.png */,
 				8896DB8E1BB92C9100C78966 /* friend.png */,
 				8896DB8F1BB92C9100C78966 /* p2.jpg */,
 				11E510F11C204282006992FC /* room445.jpg */,
-				8896DB901BB92C9100C78966 /* p3.jpg */,
+				8896DB901BB92C9100C78966 /* A.jpg */,
 				8896DB911BB92C9100C78966 /* p4.jpg */,
-				1174F7F31C2AED9200C4B650 /* mapIcon.jpg */,
-				8896DB921BB92C9100C78966 /* self.png */,
-				1174F7ED1C2AED1000C4B650 /* settingIcon.jpg */,
-				1174F7EE1C2AED1000C4B650 /* friendIcon.jpg */,
-				1174F7EF1C2AED1000C4B650 /* contactIcon.jpg */,
 				11E395F91BACEE08009F2CD2 /* bg.png */,
 				11E395FA1BACEE08009F2CD2 /* icon.png */,
 				11E395FB1BACEE08009F2CD2 /* location_icon_end.png */,
@@ -506,33 +492,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				11E396121BACEE08009F2CD2 /* menu_location_selected.png in Resources */,
-				1174F7F41C2AED9200C4B650 /* mapIcon.jpg in Resources */,
 				11E396141BACEE08009F2CD2 /* menu_setting_selected.png in Resources */,
 				11E3960E1BACEE08009F2CD2 /* login_userimage.png in Resources */,
 				8896DB961BB92C9100C78966 /* p4.jpg in Resources */,
 				11E510F21C204282006992FC /* room445.jpg in Resources */,
 				11E3960F1BACEE08009F2CD2 /* menu_contacts_normal.png in Resources */,
 				11E396131BACEE08009F2CD2 /* menu_setting_normal.png in Resources */,
+				888536881C22F05600EEF9FE /* arrow.png in Resources */,
 				11E396101BACEE08009F2CD2 /* menu_contacts_selected.png in Resources */,
 				11E396091BACEE08009F2CD2 /* location_icon_end.png in Resources */,
 				235FE82218B9DE270021ECBD /* Images.xcassets in Resources */,
 				235FE81418B9DE270021ECBD /* InfoPlist.strings in Resources */,
 				11E395F81BACECF9009F2CD2 /* 123.png in Resources */,
-				8896DB951BB92C9100C78966 /* p3.jpg in Resources */,
+				8896DB951BB92C9100C78966 /* A.jpg in Resources */,
 				11A76C711BC2B78B00572BDD /* Main.storyboard in Resources */,
 				11E3960A1BACEE08009F2CD2 /* location_icon_purple.png in Resources */,
-				1174F7F01C2AED1000C4B650 /* settingIcon.jpg in Resources */,
 				11E396111BACEE08009F2CD2 /* menu_location_normal.png in Resources */,
 				8896DB941BB92C9100C78966 /* p2.jpg in Resources */,
 				11E396071BACEE08009F2CD2 /* bg.png in Resources */,
-				8896DB971BB92C9100C78966 /* self.png in Resources */,
-				1174F7F11C2AED1000C4B650 /* friendIcon.jpg in Resources */,
 				11E3960B1BACEE08009F2CD2 /* location_icon_start.png in Resources */,
 				11E396081BACEE08009F2CD2 /* icon.png in Resources */,
 				8896DB931BB92C9100C78966 /* friend.png in Resources */,
 				11E3960D1BACEE08009F2CD2 /* login_btn_normal.png in Resources */,
+				8885368E1C230DE800EEF9FE /* floor.png in Resources */,
 				11E3960C1BACEE08009F2CD2 /* location_icon_yellow.png in Resources */,
-				1174F7F21C2AED1000C4B650 /* contactIcon.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -558,7 +541,6 @@
 				114C03571BFB243F006EF783 /* AFHTTPRequestOperation.m in Sources */,
 				114C035E1BFB243F006EF783 /* AFURLResponseSerialization.m in Sources */,
 				116179BC1B833E65007C53F6 /* IQKeyboardManager.m in Sources */,
-				119A72191C2A8CBB008FD93B /* tabBarItem1.m in Sources */,
 				235FE81A18B9DE270021ECBD /* loginAppDelegate.m in Sources */,
 				8896DB761BB1B06C00C78966 /* infoViewController.m in Sources */,
 				11CD64B61BE3C996009F08AA /* settingViewController.m in Sources */,
@@ -712,8 +694,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Login/Login.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhihao Wu (2Y5L2REW5F)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhihao Wu (2Y5L2REW5F)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Login/Login-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -722,10 +704,10 @@
 					"\"$(SRCROOT)/Login/fmdb\"",
 				);
 				INFOPLIST_FILE = "Login/Login-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				PRODUCT_BUNDLE_IDENTIFIER = FoxconnLogin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "f6b00aea-a1a8-4e67-882a-4fb046e8f269";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
@@ -739,8 +721,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Login/Login.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhihao Wu (2Y5L2REW5F)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhihao Wu (2Y5L2REW5F)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Login/Login-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -749,10 +731,10 @@
 					"\"$(SRCROOT)/Login/fmdb\"",
 				);
 				INFOPLIST_FILE = "Login/Login-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				PRODUCT_BUNDLE_IDENTIFIER = FoxconnLogin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "f6b00aea-a1a8-4e67-882a-4fb046e8f269";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;

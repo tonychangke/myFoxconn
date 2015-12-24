@@ -42,7 +42,7 @@
     
     self.navigationController.navigationBar.hidden = YES;
     //contactString=[[NSMutableString alloc]initWithString:@"tes1,chagn;r3,jfsl"];
-    contactString=[[NSMutableString alloc]initWithString:@"NULL,empty"];
+    contactString=[[NSMutableString alloc]initWithString:@"123,tony"];
     ready=false;
     //初始化数据
     [self initContactData];
@@ -94,17 +94,17 @@
 
     [self contactDataProcess];
    [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
-       NSLog(@"%@",responseObject);
         [contactString setString:[operation responseString]];
         [self contactDataProcess];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"%@",error);
+        [contactString setString:[operation responseString]];
+        NSLog(contactString,nil);
         [self contactDataProcess];
     }];
 }
 -(void)contactDataProcess {
     _contacts=[NSMutableArray array];
-    //NSLog(contactString,nil);
+    NSLog(contactString,nil);
     NSMutableArray *infoArray=[[contactString componentsSeparatedByString:@";"]mutableCopy];
     
     infoArray=[[infoArray sortedArrayUsingSelector:@selector(compare:)]mutableCopy];

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <deployment version="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <scenes>
-        <!--New Tab Bar View Controller-->
+        <!--Tab Bar Controller-->
         <scene sceneID="EQp-4I-8Ft">
             <objects>
-                <tabBarController id="jKm-Nf-ioe" customClass="newTabBarViewController" sceneMemberID="viewController">
+                <tabBarController id="jKm-Nf-ioe" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="vu9-hh-m6O"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
@@ -36,15 +36,42 @@
                         <viewControllerLayoutGuide type="bottom" id="ht2-zH-Zd0"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="cxc-Gg-D8K">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" pagingEnabled="YES" maximumZoomScale="3" translatesAutoresizingMaskIntoConstraints="NO" id="mZ6-vn-MWq">
-                                <rect key="frame" x="0.0" y="77" width="375" height="541"/>
+                                <rect key="frame" x="0.0" y="140" width="375" height="501"/>
                                 <connections>
                                     <outlet property="delegate" destination="Fex-gL-SUU" id="myg-oL-ZbU"/>
                                 </connections>
                             </scrollView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="init direction" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4OP-Ev-K5F">
+                                <rect key="frame" x="20" y="52" width="95" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="X8V-zf-cC8">
+                                <rect key="frame" x="130" y="43" width="184" height="31"/>
+                            </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7dR-uW-BFX">
+                                <rect key="frame" x="320" y="47" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="ble ready" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c5M-zA-HdQ">
+                                <rect key="frame" x="20" y="94" width="71" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pgX-Jj-950">
+                                <rect key="frame" x="132" y="93" width="69" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -58,13 +85,16 @@
                     </navigationItem>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
+                        <outlet property="bleChangeLabel" destination="pgX-Jj-950" id="RtN-If-GbY"/>
+                        <outlet property="directionSlider" destination="X8V-zf-cC8" id="iB4-em-nQa"/>
                         <outlet property="resetZoomButton" destination="Ibw-N8-nYl" id="5WK-fR-5QZ"/>
                         <outlet property="scrollView" destination="mZ6-vn-MWq" id="GiD-Vf-Clj"/>
+                        <outlet property="sliderLabel" destination="7dR-uW-BFX" id="yyB-Xk-oxZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tiu-tt-UG3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="256.5" y="-1240.5"/>
+            <point key="canvasLocation" x="264.5" y="-1094.5"/>
         </scene>
         <!--Login-->
         <scene sceneID="ufC-wZ-h7g">
@@ -274,11 +304,11 @@
                         <viewControllerLayoutGuide type="bottom" id="Fcy-bS-JMS"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="9yn-Ss-91x">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <tabBarItem key="tabBarItem" tag="2" title="联系人" id="6Yi-iw-MTV" userLabel="Contact" customClass="tabBarItem1"/>
+                    <tabBarItem key="tabBarItem" tag="2" title="联系人" id="6Yi-iw-MTV" userLabel="Contact"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
                         <segue destination="jKm-Nf-ioe" kind="modal" identifier="showFriendPosition" id="kHv-Qi-VcW"/>
@@ -298,7 +328,7 @@
                         <viewControllerLayoutGuide type="bottom" id="bV1-Mb-ey9"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="gd9-pR-jyQ">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="旧密码：" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2v8-55-Vop">
@@ -374,7 +404,7 @@
                         <viewControllerLayoutGuide type="bottom" id="h2X-ON-rqk"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="ztM-G1-BlJ">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mQv-ig-kEa">
@@ -403,7 +433,7 @@
                         <viewControllerLayoutGuide type="bottom" id="JIY-Nj-d1S"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="z7i-3A-Ba8">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ie6-wz-Sa5">
@@ -466,7 +496,7 @@
                         <viewControllerLayoutGuide type="bottom" id="ApJ-ac-7Xk"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="X3X-hS-8mO">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入要添加的用户id" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nlv-Ta-if8">
@@ -515,8 +545,8 @@
         <image name="login_userimage.png" width="400" height="400"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="s0L-6v-hak"/>
         <segue reference="EGY-Ur-bSK"/>
+        <segue reference="ovI-Er-2af"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.55294117649999996" green="0.42352941179999998" blue="0.83921568629999999" alpha="1" colorSpace="calibratedRGB"/>
 </document>
